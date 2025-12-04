@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cadastro Único — Make the Run</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="brand">
+
+      <div class="logo-img-wrapper">
+        <img src="runner.png" class="header-logo" />
+      </div>
+
+      <div>
+        <h1>
+          <span class="green">Make</span> the <span class="orange">Run</span>
+        </h1>
+
+        <p class="subtitle">
+          Cadastro Único — <span class="orange">Atleta</span> ou <span class="green">Organizador</span>
+        </p>
+      </div>
+    </div>
+  </header>
+
+
+
+  <main class="container">
+    <section class="card">
+      <h2>Cadastro Único</h2>
+      <p>Selecione o tipo de usuário e preencha suas informações.</p>
+
+      <div class="role-toggle">
+        <button class="toggle active" data-role="atleta">Sou Atleta</button>
+        <button class="toggle" data-role="organizador">Sou Organizador</button>
+      </div>
+
+      <!-- Formulário Geral -->
+      <form class="form" id="form-geral">
+
+        <div class="form-group">
+          <label>Nome Completo</label>
+          <input type="text" placeholder="Seu nome" required />
+        </div>
+
+        <!-- ---------------------- CAMPOS DE ATLETA ---------------------- -->
+        <div class="extra atleta-extra" id="atleta-campos">
+
+          <div class="form-group">
+            <label>Idade</label>
+            <input type="number" min="18" max="150" required />
+          </div>
+
+          <div class="form-group">
+            <label>Categoria do Atleta</label>
+            <select>
+              <option>TrailRunning</option>
+              <option>Maratona</option>
+              <option>Outras provas</option>
+            </select>
+          </div>
+
+        </div> <!-- FECHAMENTO ATLETA -->
+
+        <!-- ---------------------- CAMPOS DE ORGANIZADOR ---------------------- -->
+        <div class="extra organizador-extra hidden" id="organizador-campos">
+
+          <div class="form-group">
+            <label>Idade</label>
+            <input type="number" min="18" max="150" required />
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Evento</label>
+            <select>
+              <option>TrailRunning</option>
+              <option>Maratona</option>
+              <option>Outros eventos</option>
+            </select>
+          </div>
+
+        </div> <!-- FECHAMENTO ORGANIZADOR -->
+
+        <div class="form-group">
+          <label>CPF</label>
+          <input type="text" placeholder="145.069.664-30" />
+        </div>
+
+        <!-- BOTÃO DINÂMICO (AGORA É UM LINK) -->
+        <a id="btn-finalizar" class="btn" href="atleta.html">Finalizar Cadastro</a>
+
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 Make the Run</footer>
+
+  <script>
+    const toggleButtons = document.querySelectorAll('.toggle');
+    const atletaCampos = document.getElementById('atleta-campos');
+    const organizadorCampos = document.getElementById('organizador-campos');
+    const btnFinalizar = document.getElementById('btn-finalizar');
+
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+
+        // Troca botão ativo
+        toggleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Alterna os campos e define o link
+        if (btn.dataset.role === 'atleta') {
+          atletaCampos.classList.remove('hidden');
+          organizadorCampos.classList.add('hidden');
+
+          btnFinalizar.href = "atleta.html";
+          btnFinalizar.textContent = "Finalizar Cadastro ";
+        }
+        else {
+          atletaCampos.classList.add('hidden');
+          organizadorCampos.classList.remove('hidden');
+
+          btnFinalizar.href = "organizador.html";
+          btnFinalizar.textContent = "Finalizar Cadastro";
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

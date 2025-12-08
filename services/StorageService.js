@@ -1,13 +1,22 @@
+// services/StorageService.js
 export class StorageService {
     static KEY = "corridas";
 
+    static listarCorridas() {
+        return JSON.parse(localStorage.getItem(this.KEY) || "[]");
+    }
+
     static salvar(corrida) {
-        const lista = JSON.parse(localStorage.getItem(this.KEY) || "[]");
+        const lista = this.listarCorridas();
         lista.push(corrida);
+        this.atualizar(lista);
+    }
+
+    static atualizar(lista) {
         localStorage.setItem(this.KEY, JSON.stringify(lista));
     }
 
-    static listarCorridas() {
-        return JSON.parse(localStorage.getItem(this.KEY) || "[]");
+    static limpar() {
+        localStorage.removeItem(this.KEY);
     }
 }

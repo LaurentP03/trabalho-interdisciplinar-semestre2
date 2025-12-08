@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar e Filtrar</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏃 Sistema de Competições de Corrida</h1>
+            <nav>
+                <a href="../index.html">Início</a>
+                <a href="competicoes.html">Competições</a>
+                <a href="atletas.html">Atletas</a>
+                <a href="filtros.html" class="active">Filtros</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Buscar e Filtrar</h2>
+
+        <section class="filtro-section">
+            <div class="filtro-box">
+                <h3>🔍 Filtrar Competições por Modalidade</h3>
+                
+                <div class="form-group">
+                    <label>Selecione o tipo de competição:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="tipoFiltro" value="todas" checked>
+                            Todas as modalidades
+                        </label>
+                        <label>
+                            <input type="radio" name="tipoFiltro" value="maratona">
+                            Maratona
+                        </label>
+                        <label>
+                            <input type="radio" name="tipoFiltro" value="trail">
+                            Trail Running
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btnAplicarFiltro">Aplicar Filtro</button>
+            </div>
+
+            <div class="resultados-container">
+                <h4 id="tituloResultados">Resultados</h4>
+                <div id="resultadosCompeticoes" class="resultados-grid">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="filtro-section">
+            <div class="filtro-box">
+                <h3>🔍 Ver Atletas de uma Competição</h3>
+                
+                <div class="form-group">
+                    <label for="competicaoSelecionada">Selecione a competição:</label>
+                    <select id="competicaoSelecionada">
+                        <option value="">Selecione...</option>
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="btnBuscarAtletas">Buscar Atletas</button>
+            </div>
+
+            <div class="resultados-container">
+                <h4 id="tituloAtletas">Atletas Inscritos</h4>
+                <div class="tabela-container">
+                    <table id="tabelaAtletasCompeticao">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Categoria</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaAtletasCompeticao">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="filtro-section">
+            <div class="filtro-box">
+                <h3>➕ Inscrever Atleta em Competição</h3>
+                
+                <div class="form-group">
+                    <label for="competicaoInscricao">Competição:</label>
+                    <select id="competicaoInscricao">
+                        <option value="">Selecione...</option>
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="atletaInscricao">Atleta:</label>
+                    <select id="atletaInscricao">
+                        <option value="">Selecione...</option>
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="btnInscreverAtleta">Confirmar Inscrição</button>
+            </div>
+
+            <div id="mensagemInscricao" class="mensagem" style="display: none;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 - Sistema de Competições de Corrida</p>
+    </footer>
+
+    <script type="module" src="../js/views/filtro.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Competições</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏃 Sistema de Competições de Corrida</h1>
+            <nav>
+                <a href="../index.html">Início</a>
+                <a href="competicoes.html" class="active">Competições</a>
+                <a href="atletas.html">Atletas</a>
+                <a href="filtros.html">Filtros</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Gerenciar Competições</h2>
+
+        <div class="acoes-bar">
+            <button class="btn btn-primary" id="btnNovaCompeticao">➕ Nova Competição</button>
+            <select id="filtroTipo">
+                <option value="todas">Todas as modalidades</option>
+                <option value="maratona">Maratona</option>
+                <option value="trail">Trail Running</option>
+            </select>
+        </div>
+
+        <div id="formularioCompeticao" class="formulario-box" style="display: none;">
+            <h3 id="tituloFormulario">Cadastrar Nova Competição</h3>
+            <form id="formCompeticao">
+                <input type="hidden" id="competicaoId">
+
+                <div class="form-group">
+                    <label for="nome">Nome da Competição: *</label>
+                    <input type="text" id="nome" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data: *</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distancia">Distância (km): *</label>
+                        <input type="number" id="distancia" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="local">Local: *</label>
+                    <input type="text" id="local" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Competição: *</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="tipo" value="maratona" required>
+                            Maratona
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo" value="trail" required>
+                            Trail Running
+                        </label>
+                    </div>
+                </div>
+
+                <div id="camposMaratona" class="campos-especificos" style="display: none;">
+                    <h4>Dados Específicos - Maratona</h4>
+                    <div class="form-group">
+                        <label for="percursoUrbano">Percurso Urbano:</label>
+                        <input type="text" id="percursoUrbano" placeholder="Ex: Av. Paulista, Centro">
+                    </div>
+                    <div class="form-group">
+                        <label for="altimetria">Altimetria (metros):</label>
+                        <input type="number" id="altimetria" step="0.1">
+                    </div>
+                </div>
+
+                <div id="camposTrail" class="campos-especificos" style="display: none;">
+                    <h4>Dados Específicos - Trail Running</h4>
+                    <div class="form-group">
+                        <label for="tipoDeTrilha">Tipo de Trilha:</label>
+                        <select id="tipoDeTrilha">
+                            <option value="">Selecione...</option>
+                            <option value="Montanha">Montanha</option>
+                            <option value="Floresta">Floresta</option>
+                            <option value="Técnica">Técnica</option>
+                            <option value="Mista">Mista</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="desnivel">Desnível Acumulado (metros):</label>
+                        <input type="number" id="desnivel" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tabela-container">
+            <table id="tabelaCompeticoes">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Data</th>
+                        <th>Local</th>
+                        <th>Distância</th>
+                        <th>Tipo</th>
+                        <th>Atletas</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabelaCompeticoes">
+                    <!-- Preenchido via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 - Sistema de Competições de Corrida</p>
+    </footer>
+
+    <script type="module" src="../js/views/competicoes.js"></script>
+</body>
+</html>

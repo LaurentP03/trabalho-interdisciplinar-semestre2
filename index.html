@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Competições de Corrida</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏃 Sistema de Competições de Corrida</h1>
+            <nav>
+                <a href="index.html" class="active">Início</a>
+                <a href="pages/competicoes.html">Competições</a>
+                <a href="pages/atletas.html">Atletas</a>
+                <a href="   pages/filtros.html">Filtros</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-number" id="totalCompeticoes">0</div>
+                <div class="stat-label">Competições</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" id="totalAtletas">0</div>
+                <div class="stat-label">Atletas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-number" id="totalInscricoes">0</div>
+                <div class="stat-label">Inscrições</div>
+            </div>
+        </section>
+
+        <!-- Próximas Competições -->
+        <section class="proximas-competicoes">
+            <h2>🏅 Próximas Competições</h2>
+            <div id="listaProximasCompeticoes">
+                <!-- Preenchido via JavaScript -->
+            </div>
+            <a href="pages/competicoes.html" class="btn-link">Ver todas as competições →</a>
+        </section>
+
+        <!-- Ações Rápidas -->
+        <section class="acoes-rapidas">
+            <h2>Ações Rápidas</h2>
+            <div class="acoes-grid">
+                <a href="pages/competicoes.html" class="acao-card">
+                    <div class="acao-icon">➕</div>
+                    <div class="acao-text">Nova Competição</div>
+                </a>
+                <a href="pages/atletas.html" class="acao-card">
+                    <div class="acao-icon">➕</div>
+                    <div class="acao-text">Novo Atleta</div>
+                </a>
+                <a href="pages/filtros.html" class="acao-card">
+                    <div class="acao-icon">🔍</div>
+                    <div class="acao-text">Buscar/Filtrar</div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 - Sistema de Competições de Corrida</p>
+    </footer>
+
+    <script type="module" src="./js/views/dashboard.js"></script>
+</body>
+</html>

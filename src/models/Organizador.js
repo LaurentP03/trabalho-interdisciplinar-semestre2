@@ -4,7 +4,7 @@ export class Organizador extends Pessoa {
 
     #empresa;
     #cnpj;
-    #competicoesOrganizadas; // Array de competições
+    #competicoesOrganizadas;
 
     constructor(nome, cpf, dataNascimento, email, telefone, empresa, cnpj) {
         super(nome, cpf, dataNascimento, email, telefone);
@@ -13,7 +13,6 @@ export class Organizador extends Pessoa {
         this.#competicoesOrganizadas = [];
     }
 
-    // Getters
     get empresa() {
         return this.#empresa;
     }
@@ -26,12 +25,10 @@ export class Organizador extends Pessoa {
         return this.#competicoesOrganizadas;
     }
 
-    // Setters
     set empresa(valor) {
         this.#empresa = valor;
     }
 
-    // Métodos
     adicionarCompeticao(competicao) {
         this.#competicoesOrganizadas.push(competicao);
     }
@@ -46,7 +43,6 @@ export class Organizador extends Pessoa {
         return this.#competicoesOrganizadas.length;
     }
 
-    // Sobrescrita do toString - usa o toString da superclasse
     toString() {
         return `${super.toString()} | Empresa: ${this.#empresa} | CNPJ: ${this.#cnpj} | Competições: ${this.#competicoesOrganizadas.length}`;
     }

@@ -8,9 +8,9 @@ export class Competicao {
     #distanciaKm;
     #limiteAtletas;
     #valorInscricao;
-    #tipo; // "maratona" ou "trailRunning"
-    #inscricoes; // Array de inscrições
-    #organizador; // Associação com Organizador
+    #tipo;
+    #inscricoes;
+    #organizador;
 
     constructor(nome, data, local, distanciaKm, limiteAtletas, valorInscricao, tipo, organizador) {
         Competicao.#totalCompeticoes++;
@@ -26,7 +26,6 @@ export class Competicao {
         this.#organizador = organizador;
     }
 
-    // Getters
     get id() {
         return this.#id;
     }
@@ -71,7 +70,6 @@ export class Competicao {
         return Competicao.#totalCompeticoes;
     }
 
-    // Setters
     set nome(valor) {
         this.#nome = valor;
     }
@@ -96,7 +94,6 @@ export class Competicao {
         this.#valorInscricao = valor;
     }
 
-    // Métodos
     adicionarInscricao(inscricao) {
         if (this.#inscricoes.length < this.#limiteAtletas) {
             this.#inscricoes.push(inscricao);
@@ -115,10 +112,6 @@ export class Competicao {
 
     totalInscritos() {
         return this.#inscricoes.length;
-    }
-
-    getIcone() {
-        return this.#tipo === "maratona" ? "🏃" : "⛰️";
     }
 
     getDataFormatada() {

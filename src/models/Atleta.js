@@ -2,8 +2,8 @@ import { Pessoa } from "./Pessoa.js";
 
 export class Atleta extends Pessoa {
 
-    #categoria; // Juvenil, Adulto, Master, Senior
-    #inscricoes; // Array de inscrições
+    #categoria;
+    #inscricoes;
 
     constructor(nome, cpf, dataNascimento, email, telefone, categoria) {
         super(nome, cpf, dataNascimento, email, telefone);
@@ -11,7 +11,6 @@ export class Atleta extends Pessoa {
         this.#inscricoes = [];
     }
 
-    // Getters
     get categoria() {
         return this.#categoria;
     }
@@ -20,12 +19,10 @@ export class Atleta extends Pessoa {
         return this.#inscricoes;
     }
 
-    // Setters
     set categoria(valor) {
         this.#categoria = valor;
     }
 
-    // Métodos
     adicionarInscricao(inscricao) {
         this.#inscricoes.push(inscricao);
     }
@@ -42,7 +39,6 @@ export class Atleta extends Pessoa {
         return this.#inscricoes.length;
     }
 
-    // Sobrescrita do toString - usa o toString da superclasse
     toString() {
         return `${super.toString()} | Categoria: ${this.#categoria} | Inscrições: ${this.#inscricoes.length}`;
     }

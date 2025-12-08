@@ -8,8 +8,7 @@ export class Competidor {
     #data_inscricao;
     #atleta;
     #competicao;
-    #statusPagamento; // Pendente, Pago, Cancelado
-    #tempoProva;
+    #statusPagamento;
     #posicao;
 
     constructor(data_inscricao, atleta, competicao) {
@@ -18,10 +17,7 @@ export class Competidor {
         this.#atleta = atleta;
         this.#competicao = competicao;
         this.#statusPagamento = "Pendente";
-        this.#tempoProva = null;
-        this.#posicao = null;
 
-        // Gera número de peito único
         const anoNasc = new Date(atleta.dataNasc).getFullYear();
         this.#numeroPeito = Number(("" + Competidor.#contadorNumero + anoNasc).padEnd(6, '0'));
         Competidor.#contadorNumero++;
@@ -47,10 +43,6 @@ export class Competidor {
         return this.#statusPagamento;
     }
 
-    get tempoProva() {
-        return this.#tempoProva;
-    }
-
     get posicao() {
         return this.#posicao;
     }
@@ -59,31 +51,10 @@ export class Competidor {
         this.#statusPagamento = novoStatus;
     }
 
-    set tempoProva(novoTempo) {
-        this.#tempoProva = novoTempo;
-    }
-
     set posicao(novaPosicao) {
         this.#posicao = novaPosicao;
     }
 
-    // Método para confirmar pagamento
-    confirmarPagamento() {
-        this.#statusPagamento = "Pago";
-    }
-
-    // Método para cancelar inscrição
-    cancelarInscricao() {
-        this.#statusPagamento = "Cancelado";
-    }
-
-    // Método para registrar resultado
-    registrarResultado(tempo, posicao) {
-        this.#tempoProva = tempo;
-        this.#posicao = posicao;
-    }
-
-    // Método toString
     toString() {
         return `Nº Peito: ${this.#numeroPeito} | Atleta: ${this.#atleta.nome} | Competição: ${this.#competicao.nome} | Status: ${this.#statusPagamento} | Tempo: ${this.#tempoProva || 'N/A'} | Posição: ${this.#posicao || 'N/A'}`;
     }

@@ -1,40 +1,49 @@
+import { Pessoa } from "./Pessoa.js";
 
 export class Atleta extends Pessoa {
 
-    #genero;
-    #nivelExperiencia;
-    #modalidade; 
+    #categoria; // Juvenil, Adulto, Master, Senior
+    #inscricoes; // Array de inscrições
 
-    constructor( nome, CPF, data_nasc, genero, nivelExperiencia, modalidade) {
-       super( nome, CPF, data_nasc);
-
-        this.#genero = genero;
-        this.#nivelExperiencia = nivelExperiencia;
-        this.#modalidade = modalidade; //é regra de negocio, o atleta so pode ser cadastrado em UMA modalidade
-   }
-
-    get genero() {
-        return this.#genero;
+    constructor(nome, cpf, dataNascimento, email, telefone, categoria) {
+        super(nome, cpf, dataNascimento, email, telefone);
+        this.#categoria = categoria;
+        this.#inscricoes = [];
     }
 
-    get nivelExperiencia() {
-        return this.#nivelExperiencia;
-    }
-    
-    get modalidade() {
-        return this.#modalidade;
+    // Getters
+    get categoria() {
+        return this.#categoria;
     }
 
-    set modalidade(novaModalidade) {
-        this.#modalidade = novaModalidade;
+    get inscricoes() {
+        return this.#inscricoes;
     }
 
-    set nivelExperiencia(novoNivel) {
-        this.#nivelExperiencia = novoNivel;
+    // Setters
+    set categoria(valor) {
+        this.#categoria = valor;
     }
 
-    set genero(novoGenero) {
-        this.#genero = novoGenero;
+    // Métodos
+    adicionarInscricao(inscricao) {
+        this.#inscricoes.push(inscricao);
     }
 
+    removerInscricao(inscricaoId) {
+        this.#inscricoes = this.#inscricoes.filter(insc => insc.id !== inscricaoId);
+    }
+
+    getInscricoesAtivas() {
+        return this.#inscricoes.filter(insc => insc.statusPagamento === "Pago");
+    }
+
+    totalInscricoes() {
+        return this.#inscricoes.length;
+    }
+
+    // Sobrescrita do toString - usa o toString da superclasse
+    toString() {
+        return `${super.toString()} | Categoria: ${this.#categoria} | Inscrições: ${this.#inscricoes.length}`;
+    }
 }

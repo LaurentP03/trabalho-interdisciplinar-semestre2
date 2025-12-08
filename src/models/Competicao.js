@@ -1,94 +1,132 @@
 export class Competicao {
 
+    static #totalCompeticoes = 0;
+    #id;
     #nome;
-    #descricao;
-    #categoria; // trailRunning ou maratona
     #data;
-    #distanciaKM;
+    #local;
+    #distanciaKm;
     #limiteAtletas;
-    #listaCompetidores; // array de atletas inscritos
     #valorInscricao;
-    static #quantidadeInscritos = 0;
+    #tipo; // "maratona" ou "trailRunning"
+    #inscricoes; // Array de inscrições
+    #organizador; // Associação com Organizador
 
-    constructor(nome, descricao, categoria /* trailRunning ou maratona */, data, distanciaKM, limiteAtletas, listaCompetidores = [], valorInscricao) {
-
+    constructor(nome, data, local, distanciaKm, limiteAtletas, valorInscricao, tipo, organizador) {
+        Competicao.#totalCompeticoes++;
+        this.#id = Competicao.#totalCompeticoes;
         this.#nome = nome;
-        this.#descricao = descricao;
-        this.#categoria = categoria;
         this.#data = data;
-        this.#distanciaKM = distanciaKM;
+        this.#local = local;
+        this.#distanciaKm = distanciaKm;
         this.#limiteAtletas = limiteAtletas;
-        this.#listaCompetidores = listaCompetidores;
         this.#valorInscricao = valorInscricao;
-
-
-        //this.#quantidadeInscritos = listaCompetidores.length;
-        //esta errado pq static nao pode ser acessado com this. 
-        Competicao.#quantidadeInscritos = listaCompetidores.length +1;
+        this.#tipo = tipo;
+        this.#inscricoes = [];
+        this.#organizador = organizador;
     }
 
+    // Getters
+    get id() {
+        return this.#id;
+    }
 
     get nome() {
         return this.#nome;
-    }   
-
-    get descricao() {
-        return this.#descricao;
-    }   
-
-    get categoria() {
-        return this.#categoria;
     }
 
     get data() {
         return this.#data;
     }
 
-    get distanciaKM() { 
+    get local() {
+        return this.#local;
+    }
 
-        return this.#distanciaKM;
+    get distanciaKm() {
+        return this.#distanciaKm;
     }
 
     get limiteAtletas() {
         return this.#limiteAtletas;
     }
 
-    get listaCompetidores() {
-        return this.#listaCompetidores;
-    }
-
-    set descricao(novaDescricao) {
-        this.#descricao = novaDescricao;
-    }
-
-    set data(novaData) {
-        this.#data = novaData;
-    }
-
-    set limiteAtletas(novoLimite) {
-        this.#limiteAtletas = novoLimite;
-    }   
-
-    set distanciaKM(novaDistancia) {
-        this.#distanciaKM = novaDistancia;
-    }
-
-    set nome(novoNome) {
-        this.#nome = novoNome;
-    }
-
-    set listaCompetidores(novaLista) {
-        this.#listaCompetidores = novaLista;
-    }
-
     get valorInscricao() {
         return this.#valorInscricao;
-    } //nao faz sentido mudar  o valor de inscricao depois que a competicao ja foi criada pq se alguem ja se inscreveu, o valor tem que ser o mesmo pra todo mundo
-
-    get quantidadeInscritos() {
-        return Competicao.#quantidadeInscritos;
     }
 
-    
+    get tipo() {
+        return this.#tipo;
+    }
 
+    get inscricoes() {
+        return this.#inscricoes;
+    }
+
+    get organizador() {
+        return this.#organizador;
+    }
+
+    static get totalCompeticoes() {
+        return Competicao.#totalCompeticoes;
+    }
+
+    // Setters
+    set nome(valor) {
+        this.#nome = valor;
+    }
+
+    set data(valor) {
+        this.#data = valor;
+    }
+
+    set local(valor) {
+        this.#local = valor;
+    }
+
+    set distanciaKm(valor) {
+        this.#distanciaKm = valor;
+    }
+
+    set limiteAtletas(valor) {
+        this.#limiteAtletas = valor;
+    }
+
+    set valorInscricao(valor) {
+        this.#valorInscricao = valor;
+    }
+
+    // Métodos
+    adicionarInscricao(inscricao) {
+        if (this.#inscricoes.length < this.#limiteAtletas) {
+            this.#inscricoes.push(inscricao);
+            return true;
+        }
+        return false;
+    }
+
+    removerInscricao(inscricaoId) {
+        this.#inscricoes = this.#inscricoes.filter(insc => insc.id !== inscricaoId);
+    }
+
+    vagasDisponiveis() {
+        return this.#limiteAtletas - this.#inscricoes.length;
+    }
+
+    totalInscritos() {
+        return this.#inscricoes.length;
+    }
+
+    getIcone() {
+        return this.#tipo === "maratona" ? "🏃" : "⛰️";
+    }
+
+    getDataFormatada() {
+        const data = new Date(this.#data);
+        return data.toLocaleDateString('pt-BR');
+    }
+
+    toString() {
+        return `${this.getIcone()} ${this.#nome} | Data: ${this.getDataFormatada()} | Local: ${this.#local} | ${this.#distanciaKm}km | Inscritos: ${this.totalInscritos()}/${this.#limiteAtletas}`;
+    }
 }

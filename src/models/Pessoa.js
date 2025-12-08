@@ -1,62 +1,80 @@
 export class Pessoa {
 
     static #pessoasCadastradas = 0;
-    #id_pessoa;
+    #id;
     #nome;
-    #CPF;
-    #data_nasc;
+    #cpf;
+    #dataNascimento;
+    #email;
     #telefone;
 
-    constructor( nome, CPF, data_nasc, telefone) {
-
-        this.#id_pessoa; 
+    constructor(nome, cpf, dataNascimento, email, telefone) {
+        Pessoa.#pessoasCadastradas++;
+        this.#id = Pessoa.#pessoasCadastradas;
         this.#nome = nome;
-        this.#CPF = CPF; //tem q comparar se tem apenas 11 numeros
-        this.#data_nasc = data_nasc;
+        this.#cpf = cpf;
+        this.#dataNascimento = dataNascimento;
+        this.#email = email;
         this.#telefone = telefone;
-
-        Pessoa.#pessoasCadastradas++; //se passou pelo constructor, quer dizer que uma nova pessoa foi criada, logo soma UM à quantidade
-
-        this.#id_pessoa = Number(("" + new Date().getFullYear() + Pessoa.#pessoasCadastradas).padEnd(7,'0')); // é necessario usar this. porque so nao é OBRIGATORIO usar 
-        //da linha 8 pra cima
-
     }
 
-    get id_pessoa() {
-        return this.#id_pessoa;
+    get id() {
+        return this.#id;
     }
-
 
     get nome() {
         return this.#nome;
     }
 
-    get CPF() {
-        return this.#CPF;
+    get cpf() {
+        return this.#cpf;
     }
 
-    get dataNasc() {
-        return this.#data_nasc;
+    get dataNascimento() {
+        return this.#dataNascimento;
+    }
+
+    get email() {
+        return this.#email;
     }
 
     get telefone() {
         return this.#telefone;
     }
 
-    set telefone(novoTelefone) {
-        this.#telefone = novoTelefone;
+    static get totalPessoas() {
+        return Pessoa.#pessoasCadastradas;
     }
 
-    set nome(novoNome) {
-        this.#nome = novoNome;
+    set nome(valor) {
+        this.#nome = valor;
     }
 
-    set dataNasc(novaData) {
-        this.#data_nasc = novaData;
+    set email(valor) {
+        this.#email = valor;
     }
 
+    set telefone(valor) {
+        this.#telefone = valor;
+    }
+
+    set dataNascimento(valor) {
+        this.#dataNascimento = valor;
+    }
+
+    calcularIdade() {
+        const hoje = new Date();
+        const nascimento = new Date(this.#dataNascimento);
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+        
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return idade;
+    }
+
+    toString() {
+        return `ID: ${this.#id} | Nome: ${this.#nome} | CPF: ${this.#cpf} | Email: ${this.#email} | Telefone: ${this.#telefone}`;
+    }
 }
-
-/* var pessoa = new Pessoa("cecilia", "123", "20/10/2005" );
-
-console.log(pessoa); */

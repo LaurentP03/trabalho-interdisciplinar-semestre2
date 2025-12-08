@@ -1,6 +1,3 @@
-import { Atleta } from "./Atleta.js";
-import { Competicao } from "./Competicao.js";
-
 export class Competidor {
 
     static #contadorNumero = 1;
@@ -56,6 +53,6 @@ export class Competidor {
     }
 
     toString() {
-        return `Nº Peito: ${this.#numeroPeito} | Atleta: ${this.#atleta.nome} | Competição: ${this.#competicao.nome} | Status: ${this.#statusPagamento} | Tempo: ${this.#tempoProva || 'N/A'} | Posição: ${this.#posicao || 'N/A'}`;
+        return `Nº Peito: ${this.#numeroPeito} | Atleta: ${this.#atleta.nome} | Competição: ${this.#competicao.nome} | Posição: ${this.#posicao || 'N/A'}`;
     }
 }

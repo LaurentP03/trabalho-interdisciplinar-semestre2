@@ -72,6 +72,6 @@ export class Inscricao {
     }
 
     toString() {
-        return `Nº ${this.#numeroPeito} | ${this.#atleta.nome} → ${this.#competicao.nome} | Status: ${this.getStatusIcone()} ${this.#statusPagamento} | Data: ${this.getDataFormatada()}`;
+        return `Nº ${this.#numeroPeito} | ${this.#atleta.nome} → ${this.#competicao.nome} | Data: ${this.getDataFormatada()}`;
     }
 }

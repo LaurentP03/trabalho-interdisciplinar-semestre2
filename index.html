@@ -9,17 +9,20 @@
 <body>
     <header>
         <div class="container">
-            <h1>🏃 Sistema de Competições de Corrida</h1>
+            <img src="./imgs/runner.png" alt="Logo do sistema">
+            <h1> Sistema de Competições de Corrida</h1>
             <nav>
                 <a href="index.html" class="active">Início</a>
                 <a href="pages/competicoes.html">Competições</a>
                 <a href="pages/atletas.html">Atletas</a>
-                <a href="   pages/filtros.html">Filtros</a>
+                <a href="pages/inscricoes.html">Inscrições</a>
+                <a href="pages/relatorios.html">Relatórios</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
+        <h2>Quantidade registrada no sistema de:</h2>
         <section class="stats-section">
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
@@ -40,30 +43,21 @@
             </div>
         </section>
 
-        <!-- Próximas Competições -->
-        <section class="proximas-competicoes">
-            <h2>🏅 Próximas Competições</h2>
-            <div id="listaProximasCompeticoes">
-                <!-- Preenchido via JavaScript -->
-            </div>
-            <a href="pages/competicoes.html" class="btn-link">Ver todas as competições →</a>
-        </section>
-
         <!-- Ações Rápidas -->
         <section class="acoes-rapidas">
             <h2>Ações Rápidas</h2>
             <div class="acoes-grid">
-                <a href="pages/competicoes.html" class="acao-card">
+                <a onclick="abrirPopup()" id="popup competicao" class="acao-card">
                     <div class="acao-icon">➕</div>
                     <div class="acao-text">Nova Competição</div>
                 </a>
-                <a href="pages/atletas.html" class="acao-card">
+                <a onclick="abrirPopup()" id="popup atleta" class="acao-card">
                     <div class="acao-icon">➕</div>
                     <div class="acao-text">Novo Atleta</div>
                 </a>
-                <a href="pages/filtros.html" class="acao-card">
+                <a onclick="abrirPopup()" id="popup inscricoes" class="acao-card">
                     <div class="acao-icon">🔍</div>
-                    <div class="acao-text">Buscar/Filtrar</div>
+                    <div class="acao-text">Inscrever Atleta</div>
                 </a>
             </div>
         </section>

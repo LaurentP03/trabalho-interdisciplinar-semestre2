@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar e Filtrar</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="../imgs/runner.png" alt="Logo do sistema">
+            <h1>Sistema de Competições de Corrida</h1>
+            <nav>
+                <a href="../index.html">Início</a>
+                <a href="competicoes.html">Competições</a>
+                <a href="atletas.html">Atletas</a>
+                <a href="inscricoes.html" class="active">Inscrições</a>
+                <a href="relatorios.html">Relatórios</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="filtro-section">
+            <div class="filtro-box">
+                <h3>➕ Inscrever Atleta em Competição</h3>
+                
+                <div class="form-group">
+                    <label for="competicaoInscricao">Competição:</label>
+                    <select id="competicaoInscricao">
+                        <option value="">Selecione...</option>
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="atletaInscricao">Atleta:</label>
+                    <select id="atletaInscricao">
+                        <option value="">Selecione...</option>
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="btnInscreverAtleta">Confirmar Inscrição</button>
+            </div>
+
+            <div id="mensagemInscricao" class="mensagem" style="display: none;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 - Sistema de Competições de Corrida</p>
+    </footer>
+
+    <script type="module" src="../js/views/inscricoes.js"></script>
+</body>
+</html>

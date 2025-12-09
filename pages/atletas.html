@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Atletas</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
     <header>
         <div class="container">
-            <h1>🏃 Sistema de Competições de Corrida</h1>
+            <img src="../imgs/runner.png" alt="Logo do sistema">
+            <h1>Sistema de Competições de Corrida</h1>
             <nav>
                 <a href="../index.html">Início</a>
                 <a href="competicoes.html">Competições</a>
                 <a href="atletas.html" class="active">Atletas</a>
-                <a href="filtros.html">Filtros</a>
+                <a href="inscricoes.html">Inscrições</a>
+                <a href="relatorios.html">Relatórios</a>
             </nav>
         </div>
     </header>
@@ -22,9 +26,16 @@
     <main class="container">
         <h2>Gerenciar Atletas</h2>
 
-        <div class="acoes-bar">
+        <div class="acoes-container">
             <button class="btn btn-primary" id="btnNovoAtleta">➕ Novo Atleta</button>
-            <input type="text" id="campoBusca" placeholder="🔍 Buscar por nome ou CPF...">
+            <div class="acoes-bar">
+                <input type="text" id="campoBusca" placeholder="🔍 Buscar por nome ou CPF...">
+                <select id="filtroTipo">
+                    <option value="todas">Todas as modalidades</option>
+                    <option value="maratona">Maratona</option>
+                    <option value="trail">Trail Running</option>
+                </select>
+            </div>
         </div>
 
         <div id="formularioAtleta" class="formulario-box" style="display: none;">
@@ -91,4 +102,5 @@
 
     <script type="module" src="../js/views/atletas.js"></script>
 </body>
+
 </html>

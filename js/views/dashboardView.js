@@ -1,4 +1,3 @@
-// Elementos do DOM
 const totalCompeticoesEl = document.getElementById('totalCompeticoes');
 const totalAtletasEl = document.getElementById('totalAtletas');
 const totalInscricoesEl = document.getElementById('totalInscricoes');

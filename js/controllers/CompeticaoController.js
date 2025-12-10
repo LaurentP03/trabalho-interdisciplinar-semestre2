@@ -10,11 +10,18 @@ let carregado = false;
 
 function salvar() {
     try {
-        const dados = JSON.stringify(competicoes.map(c => ({
-            id: c.id, nome: c.nome, data: c.data, local: c.local,
-            distancia: c.distancia, atletas: c.atletas,
-            tipo: c instanceof Maratona ? 'maratona' : 'trail'
-        })));
+        const competicoesParaSalvar = competicoes.map(c => {
+            return {
+                id: c.id,
+                nome: c.nome,
+                data: c.data,
+                local: c.local,
+                distancia: c.distancia,
+                atletas: c.atletas,
+                tipo: c instanceof Maratona ? 'maratona' : 'trail'
+            };
+        });
+        const dados = JSON.stringify(competicoesParaSalvar);
         localStorage.setItem('competicoes', dados);
         localStorage.setItem('competicoesId', proximoId.toString());
     } catch (error) {
@@ -28,11 +35,13 @@ function carregar() {
     try {
         const dados = localStorage.getItem('competicoes');
         if (dados) {
-            competicoes = JSON.parse(dados).map(c => {
+            const competicoesCarregadas = JSON.parse(dados);
+            competicoes = competicoesCarregadas.map(c => {
                 const comp = c.tipo === 'maratona' 
                     ? new Maratona(c.id, c.nome, c.data, c.local, c.distancia)
                     : new TrailRunning(c.id, c.nome, c.data, c.local, c.distancia);
-                c.atletas.forEach(idAtleta => comp.adicionarAtleta(idAtleta));
+                const atletasDaCompeticao = c.atletas;
+                atletasDaCompeticao.forEach(idAtleta => comp.adicionarAtleta(idAtleta));
                 return comp;
             });
             const id = localStorage.getItem('competicoesId');
@@ -53,71 +62,100 @@ export function inicializar() {
 }
 
 function configurarEventos() {
-    document.getElementById('btnNovaCompeticao')?.addEventListener('click', () => {
-        modoEdicao = false;
-        idEmEdicao = null;
-        abrirFormulario('criar');
-    });
+    const btnNovaCompeticao = document.getElementById('btnNovaCompeticao');
+    if (btnNovaCompeticao) {
+        btnNovaCompeticao.addEventListener('click', () => {
+            modoEdicao = false;
+            idEmEdicao = null;
+            abrirFormulario('criar');
+        });
+    }
 
-    document.getElementById('btnCancelar')?.addEventListener('click', () => fecharFormulario());
+    const btnCancelar = document.getElementById('btnCancelar');
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', () => fecharFormulario());
+    }
 
-    document.getElementById('formCompeticao')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const dados = obterDadosFormulario();
+    const formCompeticao = document.getElementById('formCompeticao');
+    if (formCompeticao) {
+        formCompeticao.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const dados = obterDadosFormulario();
+            const nome = dados.nome;
+            const data = dados.data;
+            const local = dados.local;
+            const distancia = dados.distancia;
+            const tipo = dados.tipo;
 
-        if (modoEdicao) {
-            const comp = competicoes.find(c => c.id === idEmEdicao);
-            if (comp) {
-                comp.nome = dados.nome;
-                comp.data = dados.data;
-                comp.local = dados.local;
-                comp.distancia = dados.distancia;
+            if (modoEdicao) {
+                const comp = competicoes.find(c => c.id === idEmEdicao);
+                if (comp) {
+                    comp.nome = nome;
+                    comp.data = data;
+                    comp.local = local;
+                    comp.distancia = distancia;
+                    salvar();
+                    mostrarMensagem('Competição atualizada!');
+                }
+            } else {
+                const comp = tipo === 'maratona'
+                    ? new Maratona(proximoId++, nome, data, local, distancia)
+                    : new TrailRunning(proximoId++, nome, data, local, distancia);
+                competicoes.push(comp);
                 salvar();
-                mostrarMensagem('Competição atualizada!');
+                mostrarMensagem('Competição cadastrada!');
             }
-        } else {
-            const comp = dados.tipo === 'maratona'
-                ? new Maratona(proximoId++, dados.nome, dados.data, dados.local, dados.distancia)
-                : new TrailRunning(proximoId++, dados.nome, dados.data, dados.local, dados.distancia);
-            competicoes.push(comp);
-            salvar();
-            mostrarMensagem('Competição cadastrada!');
-        }
-        fecharFormulario();
-        filtrar();
-    });
+            fecharFormulario();
+            filtrar();
+        });
+    }
 
-    document.getElementById('campoBusca')?.addEventListener('input', () => filtrar());
-    document.getElementById('filtroTipo')?.addEventListener('change', () => filtrar());
+    const campoBusca = document.getElementById('campoBusca');
+    if (campoBusca) {
+        campoBusca.addEventListener('input', () => filtrar());
+    }
 
-    document.getElementById('corpoTabelaCompeticoes')?.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
+    const filtroTipo = document.getElementById('filtroTipo');
+    if (filtroTipo) {
+        filtroTipo.addEventListener('change', () => filtrar());
+    }
 
-        const id = parseInt(btn.dataset.id);
-        
-        if (btn.dataset.action === 'editar') {
-            const comp = competicoes.find(c => c.id === id);
-            if (comp) {
-                modoEdicao = true;
-                idEmEdicao = id;
-                abrirFormulario('editar');
-                preencherFormulario(comp, comp instanceof Maratona ? 'maratona' : 'trail');
+    const corpoTabelaCompeticoes = document.getElementById('corpoTabelaCompeticoes');
+    if (corpoTabelaCompeticoes) {
+        corpoTabelaCompeticoes.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const id = parseInt(btn.dataset.id);
+            const action = btn.dataset.action;
+            
+            if (action === 'editar') {
+                const comp = competicoes.find(c => c.id === id);
+                if (comp) {
+                    modoEdicao = true;
+                    idEmEdicao = id;
+                    abrirFormulario('editar');
+                    const tipo = comp instanceof Maratona ? 'maratona' : 'trail';
+                    preencherFormulario(comp, tipo);
+                }
+            } else if (action === 'excluir') {
+                if (confirm('Excluir competição?')) {
+                    competicoes = competicoes.filter(c => c.id !== id);
+                    salvar();
+                    mostrarMensagem('Competição excluída!');
+                    filtrar();
+                }
             }
-        } else if (btn.dataset.action === 'excluir') {
-            if (confirm('Excluir competição?')) {
-                competicoes = competicoes.filter(c => c.id !== id);
-                salvar();
-                mostrarMensagem('Competição excluída!');
-                filtrar();
-            }
-        }
-    });
+        });
+    }
 }
 
 function filtrar() {
-    const tipo = document.getElementById('filtroTipo')?.value || 'todas';
-    const busca = document.getElementById('campoBusca')?.value.toLowerCase().trim() || '';
+    const filtroTipoElement = document.getElementById('filtroTipo');
+    const campoBuscaElement = document.getElementById('campoBusca');
+    
+    const tipo = filtroTipoElement ? filtroTipoElement.value : 'todas';
+    const busca = campoBuscaElement ? campoBuscaElement.value.toLowerCase().trim() : '';
 
     let filtradas = tipo === 'todas' ? competicoes
         : tipo === 'maratona' ? competicoes.filter(c => c instanceof Maratona)
@@ -134,9 +172,15 @@ function filtrar() {
 }
 
 function carregarExemplos() {
-    competicoes.push(new Maratona(proximoId++, 'Maratona SP', '2024-06-15', 'São Paulo', 42));
-    competicoes.push(new TrailRunning(proximoId++, 'Trail Mantiqueira', '2024-07-20', 'Campos do Jordão', 21));
-    competicoes.push(new Maratona(proximoId++, 'Maratona RJ', '2024-08-10', 'Rio de Janeiro', 42));
+    const maratonaSP = new Maratona(proximoId++, 'Maratona SP', '2024-06-15', 'São Paulo', 42);
+    competicoes.push(maratonaSP);
+    
+    const trailMantiqueira = new TrailRunning(proximoId++, 'Trail Mantiqueira', '2024-07-20', 'Campos do Jordão', 21);
+    competicoes.push(trailMantiqueira);
+    
+    const maratonaRJ = new Maratona(proximoId++, 'Maratona RJ', '2024-08-10', 'Rio de Janeiro', 42);
+    competicoes.push(maratonaRJ);
+    
     salvar();
 }
 
@@ -159,7 +203,9 @@ export function contarTotal() {
 export function adicionarAtletaCompeticao(idCompeticao, idAtleta) {
     carregar();
     const comp = buscarPorId(idCompeticao);
-    if (!comp) return { sucesso: false, mensagem: 'Competição não encontrada!' };
+    if (!comp) {
+        return { sucesso: false, mensagem: 'Competição não encontrada!' };
+    }
     comp.adicionarAtleta(idAtleta);
     salvar();
     return { sucesso: true };

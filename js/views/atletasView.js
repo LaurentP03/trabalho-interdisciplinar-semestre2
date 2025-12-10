@@ -30,30 +30,49 @@ export function abrirFormulario(modo) {
     formulario.style.display = 'block';
     tituloFormulario.textContent = modo === 'editar' ? 'Editar Atleta' : 'Cadastrar Novo Atleta';
     if (modo === 'criar') {
-        form?.reset();
-        document.getElementById('cpf').disabled = false;
+        if (form) {
+            form.reset();
+        }
+        const cpfElement = document.getElementById('cpf');
+        if (cpfElement) {
+            cpfElement.disabled = false;
+        }
     }
 }
 
 export function fecharFormulario() {
     if (formulario) formulario.style.display = 'none';
-    form?.reset();
+    if (form) {
+        form.reset();
+    }
 }
 
 export function preencherFormulario(atleta) {
-    document.getElementById('atletaId').value = atleta.id;
-    document.getElementById('nome').value = atleta.nome;
-    document.getElementById('cpf').value = atleta.cpf;
-    document.getElementById('cpf').disabled = true;
-    document.getElementById('dataNascimento').value = atleta.dataNascimento;
-    document.getElementById('btnSalvar').textContent = 'Atualizar';
+    const atletaIdElement = document.getElementById('atletaId');
+    const nomeElement = document.getElementById('nome');
+    const cpfElement = document.getElementById('cpf');
+    const dataNascimentoElement = document.getElementById('dataNascimento');
+    const btnSalvarElement = document.getElementById('btnSalvar');
+    
+    if (atletaIdElement) atletaIdElement.value = atleta.id;
+    if (nomeElement) nomeElement.value = atleta.nome;
+    if (cpfElement) {
+        cpfElement.value = atleta.cpf;
+        cpfElement.disabled = true;
+    }
+    if (dataNascimentoElement) dataNascimentoElement.value = atleta.dataNascimento;
+    if (btnSalvarElement) btnSalvarElement.textContent = 'Atualizar';
 }
 
 export function obterDadosFormulario() {
+    const nomeElement = document.getElementById('nome');
+    const cpfElement = document.getElementById('cpf');
+    const dataNascimentoElement = document.getElementById('dataNascimento');
+    
     return {
-        nome: document.getElementById('nome').value,
-        cpf: document.getElementById('cpf').value,
-        dataNascimento: document.getElementById('dataNascimento').value
+        nome: nomeElement ? nomeElement.value : '',
+        cpf: cpfElement ? cpfElement.value : '',
+        dataNascimento: dataNascimentoElement ? dataNascimentoElement.value : ''
     };
 }
 
@@ -62,7 +81,10 @@ export function mostrarMensagem(msg) {
 }
 
 function formatarData(data) {
-    const [ano, mes, dia] = data.split('-');
+    const partes = data.split('-');
+    const ano = partes[0];
+    const mes = partes[1];
+    const dia = partes[2];
     return `${dia}/${mes}/${ano}`;
 }
 

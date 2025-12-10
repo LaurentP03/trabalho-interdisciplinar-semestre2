@@ -1,5 +1,3 @@
-import { Maratona } from '../models/Maratona.js';
-
 const inputCompeticao = document.getElementById('buscaCompeticao');
 const inputAtleta = document.getElementById('buscaAtleta');
 const listaCompeticoes = document.getElementById('listaCompeticoes');
@@ -24,12 +22,11 @@ export function renderizarCompeticoes(competicoes) {
     }
 
     const html = competicoes.map(c => {
-        const tipo = c instanceof Maratona ? 'Maratona' : 'Trail Running';
         const data = formatarData(c.data);
         return `
             <div class="lista-item" data-id="${c.id}" data-tipo="competicao">
                 <strong>${c.nome}</strong>
-                <span>${tipo} - ${data} - ${c.local}</span>
+                <span>${c.tipoFormatado} - ${data} - ${c.local}</span>
             </div>
         `;
     }).join('');
@@ -67,9 +64,8 @@ export function renderizarAtletas(atletas) {
 
 export function selecionarCompeticao(comp) {
     competicaoSelecionada = comp;
-    const tipo = comp instanceof Maratona ? 'Maratona' : 'Trail Running';
     if (inputCompeticao) {
-        inputCompeticao.value = `${comp.nome} - ${tipo}`;
+        inputCompeticao.value = `${comp.nome} - ${comp.tipoFormatado}`;
     }
     if (listaCompeticoes) {
         listaCompeticoes.style.display = 'none';
@@ -87,9 +83,12 @@ export function selecionarAtleta(atleta) {
 }
 
 export function obterSelecao() {
+    const idCompeticao = competicaoSelecionada ? competicaoSelecionada.id : null;
+    const idAtleta = atletaSelecionado ? atletaSelecionado.id : null;
+    
     return {
-        idCompeticao: competicaoSelecionada?.id || null,
-        idAtleta: atletaSelecionado?.id || null
+        idCompeticao: idCompeticao,
+        idAtleta: idAtleta
     };
 }
 
@@ -123,6 +122,9 @@ export function mostrarMensagem(texto, tipo = 'sucesso') {
 
 function formatarData(data) {
     if (!data) return '';
-    const [ano, mes, dia] = data.split('-');
+    const partes = data.split('-');
+    const ano = partes[0];
+    const mes = partes[1];
+    const dia = partes[2];
     return `${dia}/${mes}/${ano}`;
 }

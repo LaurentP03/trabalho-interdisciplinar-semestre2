@@ -1,5 +1,6 @@
 import * as competicaoController from './CompeticaoController.js';
 import * as atletaController from './AtletaController.js';
+import { Maratona } from '../models/Maratona.js';
 import { renderizarCompeticoes, renderizarAtletas, selecionarCompeticao, selecionarAtleta, obterSelecao, limparSelecao, esconderListas, mostrarMensagem } from '../views/inscricoesView.js';
 
 export function inicializar() {
@@ -12,9 +13,22 @@ export function inicializar() {
     }, 150);
 }
 
+function formatarCompeticaoParaView(comp) {
+    return {
+        id: comp.id,
+        nome: comp.nome,
+        data: comp.data,
+        local: comp.local,
+        distancia: comp.distancia,
+        tipoFormatado: comp instanceof Maratona ? 'Maratona' : 'Trail Running'
+    };
+}
+
 function configurarEventos() {
     document.getElementById('btnInscreverAtleta')?.addEventListener('click', () => {
-        const { idCompeticao, idAtleta } = obterSelecao();
+        const selecao = obterSelecao();
+        const idCompeticao = selecao.idCompeticao;
+        const idAtleta = selecao.idAtleta;
 
         if (!idCompeticao || !idAtleta) {
             mostrarMensagem('Selecione uma competição e um atleta!', 'erro');
@@ -60,7 +74,9 @@ function configurarEventos() {
             );
             
             console.log('>>> Resultados:', resultados.length);
-            renderizarCompeticoes(resultados);
+            
+            const competicoesFormatadas = resultados.map(formatarCompeticaoParaView);
+            renderizarCompeticoes(competicoesFormatadas);
         });
     } else {
         console.error('Input de competição NÃO encontrado!');
@@ -98,7 +114,10 @@ function configurarEventos() {
         const item = e.target.closest('.lista-item');
         if (item && item.dataset.tipo === 'competicao') {
             const comp = competicaoController.buscarPorId(parseInt(item.dataset.id));
-            if (comp) selecionarCompeticao(comp);
+            if (comp) {
+                const compFormatada = formatarCompeticaoParaView(comp);
+                selecionarCompeticao(compFormatada);
+            }
         }
     });
 

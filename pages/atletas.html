@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Atletas</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
-
 <body>
     <header>
         <div class="container">
@@ -30,11 +28,6 @@
             <button class="btn btn-primary" id="btnNovoAtleta">➕ Novo Atleta</button>
             <div class="acoes-bar">
                 <input type="text" id="campoBusca" placeholder="🔍 Buscar por nome ou CPF...">
-                <select id="filtroTipo">
-                    <option value="todas">Todas as modalidades</option>
-                    <option value="maratona">Maratona</option>
-                    <option value="trail">Trail Running</option>
-                </select>
             </div>
         </div>
 
@@ -59,17 +52,6 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="categoria">Categoria: *</label>
-                    <select id="categoria" required>
-                        <option value="">Selecione...</option>
-                        <option value="Juvenil">Juvenil (até 17 anos)</option>
-                        <option value="Adulto">Adulto (18-39 anos)</option>
-                        <option value="Master">Master (40-59 anos)</option>
-                        <option value="Senior">Senior (60+ anos)</option>
-                    </select>
-                </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar</button>
@@ -85,7 +67,6 @@
                         <th>Nome</th>
                         <th>CPF</th>
                         <th>Data Nascimento</th>
-                        <th>Categoria</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -100,7 +81,6 @@
         <p>© 2024 - Sistema de Competições de Corrida</p>
     </footer>
 
-    <script type="module" src="../js/views/atletas.js"></script>
+    <script type="module" src="../main.js"></script>
 </body>
-
 </html>

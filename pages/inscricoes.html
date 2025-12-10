@@ -3,8 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar e Filtrar</title>
+    <title>Inscrições</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .busca-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .busca-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .busca-input:focus {
+            outline: none;
+            border-color: #579D35;
+        }
+
+        .lista-resultados {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .lista-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .lista-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .lista-item:last-child {
+            border-bottom: none;
+        }
+
+        .lista-item strong {
+            display: block;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .lista-item span {
+            display: block;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .lista-item-vazio {
+            padding: 15px;
+            text-align: center;
+            color: #999;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -22,24 +91,38 @@
     </header>
 
     <main class="container">
+        <h2>Inscrever Atleta em Competição</h2>
+        
         <section class="filtro-section">
             <div class="filtro-box">
-                <h3>➕ Inscrever Atleta em Competição</h3>
+                <h3>➕ Realizar Inscrição</h3>
                 
-                <div class="form-group">
-                    <label for="competicaoInscricao">Competição:</label>
-                    <select id="competicaoInscricao">
-                        <option value="">Selecione...</option>
+                <div class="busca-container">
+                    <label for="buscaCompeticao">Buscar Competição:</label>
+                    <input 
+                        type="text" 
+                        id="buscaCompeticao" 
+                        class="busca-input"
+                        placeholder="🔍 Digite o nome ou local da competição..."
+                        autocomplete="off"
+                    >
+                    <div id="listaCompeticoes" class="lista-resultados">
                         <!-- Preenchido via JavaScript -->
-                    </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="atletaInscricao">Atleta:</label>
-                    <select id="atletaInscricao">
-                        <option value="">Selecione...</option>
+                <div class="busca-container">
+                    <label for="buscaAtleta">Buscar Atleta:</label>
+                    <input 
+                        type="text" 
+                        id="buscaAtleta" 
+                        class="busca-input"
+                        placeholder="🔍 Digite o nome ou CPF do atleta..."
+                        autocomplete="off"
+                    >
+                    <div id="listaAtletas" class="lista-resultados">
                         <!-- Preenchido via JavaScript -->
-                    </select>
+                    </div>
                 </div>
 
                 <button class="btn btn-primary" id="btnInscreverAtleta">Confirmar Inscrição</button>
@@ -53,6 +136,6 @@
         <p>© 2024 - Sistema de Competições de Corrida</p>
     </footer>
 
-    <script type="module" src="../js/views/inscricoes.js"></script>
+    <script type="module" src="../main.js"></script>
 </body>
 </html>

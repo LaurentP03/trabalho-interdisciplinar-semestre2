@@ -1,6 +1,6 @@
 import { Maratona } from '../models/Maratona.js';
 import { TrailRunning } from '../models/TrailRunning.js';
-import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem } from '../views/competicoesView.js';
+import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, validarDataCompeticao } from '../views/competicoesView.js';
 
 let competicoes = [];
 let proximoId = 1;
@@ -87,6 +87,12 @@ function configurarEventos() {
             const distancia = dados.distancia;
             const tipo = dados.tipo;
 
+            const validacao = validarDataCompeticao(data);
+            if (!validacao.valido) {
+                mostrarMensagem(validacao.mensagem, 'erro');
+                return;
+            }
+
             if (modoEdicao) {
                 const comp = competicoes.find(c => c.id === idEmEdicao);
                 if (comp) {
@@ -172,13 +178,13 @@ function filtrar() {
 }
 
 function carregarExemplos() {
-    const maratonaSP = new Maratona(proximoId++, 'Maratona SP', '2024-06-15', 'São Paulo', 42);
+    const maratonaSP = new Maratona(proximoId++, 'Maratona SP', '2025-06-15', 'São Paulo', 42);
     competicoes.push(maratonaSP);
     
-    const trailMantiqueira = new TrailRunning(proximoId++, 'Trail Mantiqueira', '2024-07-20', 'Campos do Jordão', 21);
+    const trailMantiqueira = new TrailRunning(proximoId++, 'Trail Mantiqueira', '2025-07-20', 'Campos do Jordão', 21);
     competicoes.push(trailMantiqueira);
     
-    const maratonaRJ = new Maratona(proximoId++, 'Maratona RJ', '2024-08-10', 'Rio de Janeiro', 42);
+    const maratonaRJ = new Maratona(proximoId++, 'Maratona RJ', '2025-08-10', 'Rio de Janeiro', 42);
     competicoes.push(maratonaRJ);
     
     salvar();

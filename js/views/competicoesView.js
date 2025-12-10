@@ -78,6 +78,41 @@ export function obterDadosFormulario() {
     };
 }
 
+export function validarDataCompeticao(data) {
+    if (!data) {
+        return { valido: false, mensagem: 'Data da competição é obrigatória!' };
+    }
+
+    const partes = data.split('-');
+    if (partes.length !== 3) {
+        return { valido: false, mensagem: 'Formato de data inválido!' };
+    }
+
+    const ano = partes[0];
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[2]);
+
+    if (ano.length !== 4 || isNaN(parseInt(ano))) {
+        return { valido: false, mensagem: 'O ano deve ter exatamente 4 dígitos!' };
+    }
+
+    const anoNumero = parseInt(ano);
+
+    if (anoNumero < 2025) {
+        return { valido: false, mensagem: 'O ano da competição deve ser 2025 ou posterior!' };
+    }
+
+    if (mes < 1 || mes > 12) {
+        return { valido: false, mensagem: 'Mês inválido!' };
+    }
+
+    if (dia < 1 || dia > 31) {
+        return { valido: false, mensagem: 'Dia inválido!' };
+    }
+
+    return { valido: true };
+}
+
 export function mostrarMensagem(msg, tipo = 'sucesso') {
     alert(msg);
 }
@@ -88,82 +123,4 @@ function formatarData(data) {
     const mes = partes[1];
     const dia = partes[2];
     return `${dia}/${mes}/${ano}`;
-}
-
-export function configurarValidacaoData(idCampo, tipo) {
-    const inputData = document.getElementById(idCampo);
-    if (!inputData) return;
-
-    const dataAtual = new Date();
-    const anoAtual = dataAtual.getFullYear();
-    const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    const diaAtual = String(dataAtual.getDate()).padStart(2, '0');
-    const dataHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
-
-    if (tipo === 'nascimento') {
-        inputData.setAttribute('min', '1900-01-01');
-        inputData.setAttribute('max', dataHoje);
-    } else if (tipo === 'competicao') {
-        inputData.setAttribute('min', '2000-01-01');
-        inputData.setAttribute('max', `${anoAtual + 5}-12-31`);
-    }
-
-    inputData.addEventListener('input', (e) => {
-        const valor = e.target.value;
-        if (valor.length === 10) {
-            const partes = valor.split('-');
-            const ano = Number(partes[0]);
-            
-            if (ano.toString().length > 4) {
-                e.target.value = '';
-                alert('Ano inválido! Use formato de 4 dígitos.');
-            }
-        }
-    });
-
-    inputData.addEventListener('blur', (e) => {
-        const valor = e.target.value;
-        if (!valor) return;
-
-        const partes = valor.split('-');
-        const ano = Number(partes[0]);
-        const mes = Number(partes[1]);
-        const dia = Number(partes[2]);
-        
-        if (ano.toString().length !== 4) {
-            alert('Ano deve ter exatamente 4 dígitos!');
-            e.target.value = '';
-            return;
-        }
-
-        if (tipo === 'nascimento') {
-            if (ano < 1900 || ano > anoAtual) {
-                alert(`Ano deve estar entre 1900 e ${anoAtual}!`);
-                e.target.value = '';
-                return;
-            }
-
-            const dataNascimento = new Date(ano, mes - 1, dia);
-            if (dataNascimento > dataAtual) {
-                alert('Data de nascimento não pode ser futura!');
-                e.target.value = '';
-            }
-        } else if (tipo === 'competicao') {
-            if (ano < 2000 || ano > anoAtual + 5) {
-                alert(`Ano deve estar entre 2000 e ${anoAtual + 5}!`);
-                e.target.value = '';
-            }
-        }
-    });
-
-    inputData.addEventListener('keydown', (e) => {
-        const teclas = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'];
-        if (teclas.includes(e.key)) {
-            return;
-        }
-        
-        if (e.target.value.length >= 10 && !e.ctrlKey && !e.metaKey) {
-            e.preventDefault();
-        }
-    });
 }

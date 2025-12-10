@@ -76,7 +76,54 @@ export function obterDadosFormulario() {
     };
 }
 
-export function mostrarMensagem(msg) {
+export function validarDataNascimento(data) {
+    if (!data) {
+        return { valido: false, mensagem: 'Data de nascimento é obrigatória!' };
+    }
+
+    const partes = data.split('-');
+    if (partes.length !== 3) {
+        return { valido: false, mensagem: 'Formato de data inválido!' };
+    }
+
+    const ano = partes[0];
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[2]);
+
+    if (ano.length !== 4 || isNaN(parseInt(ano))) {
+        return { valido: false, mensagem: 'O ano deve ter exatamente 4 dígitos!' };
+    }
+
+    const anoNumero = parseInt(ano);
+
+    if (anoNumero > 2025) {
+        return { valido: false, mensagem: 'A data de nascimento não pode ser posterior a 2025!' };
+    }
+
+    if (anoNumero < 1900) {
+        return { valido: false, mensagem: 'O ano deve ser 1900 ou posterior!' };
+    }
+
+    if (mes < 1 || mes > 12) {
+        return { valido: false, mensagem: 'Mês inválido!' };
+    }
+
+    if (dia < 1 || dia > 31) {
+        return { valido: false, mensagem: 'Dia inválido!' };
+    }
+
+    const dataInformada = new Date(anoNumero, mes - 1, dia);
+    const dataAtual = new Date();
+    dataAtual.setHours(0, 0, 0, 0);
+
+    if (dataInformada > dataAtual) {
+        return { valido: false, mensagem: 'A data de nascimento não pode ser futura!' };
+    }
+
+    return { valido: true };
+}
+
+export function mostrarMensagem(msg, tipo = 'sucesso') {
     alert(msg);
 }
 

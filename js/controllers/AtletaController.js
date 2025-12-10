@@ -1,5 +1,5 @@
 import { Atleta } from '../models/Atleta.js';
-import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, configurarMascaraCPF } from '../views/atletasView.js';
+import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, configurarMascaraCPF, validarDataNascimento } from '../views/atletasView.js';
 
 let atletas = [];
 let proximoId = 1;
@@ -76,6 +76,12 @@ function configurarEventos() {
             const nome = dados.nome;
             const cpf = dados.cpf;
             const dataNascimento = dados.dataNascimento;
+
+            const validacao = validarDataNascimento(dataNascimento);
+            if (!validacao.valido) {
+                mostrarMensagem(validacao.mensagem, 'erro');
+                return;
+            }
 
             if (modoEdicao) {
                 const atleta = atletas.find(a => a.id === idEmEdicao);

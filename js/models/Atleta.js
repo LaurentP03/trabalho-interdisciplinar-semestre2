@@ -3,49 +3,39 @@ export class Atleta {
     #nome;
     #cpf;
     #dataNascimento;
-    #categoria;
 
-    constructor(id, nome, cpf, dataNascimento, categoria) {
+    constructor(id, nome, cpf, dataNascimento) {
         this.#id = id;
         this.#nome = nome;
         this.#cpf = cpf;
         this.#dataNascimento = dataNascimento;
-        this.#categoria = categoria;
     }
 
-    getId() {
+    get id() {
         return this.#id;
     }
 
-    getNome() {
+    get nome() {
         return this.#nome;
     }
 
-    getCpf() {
+    get cpf() {
         return this.#cpf;
     }
 
-    getDataNascimento() {
+    get dataNascimento() {
         return this.#dataNascimento;
     }
 
-    getCategoria() {
-        return this.#categoria;
-    }
-
-    setNome(nome) {
+    set nome(nome) {
         this.#nome = nome;
     }
 
-    setDataNascimento(dataNascimento) {
+    set dataNascimento(dataNascimento) {
         this.#dataNascimento = dataNascimento;
     }
 
-    setCategoria(categoria) {
-        this.#categoria = categoria;
-    }
-
     toString() {
-        return `Atleta: ${this.#nome}, CPF: ${this.#cpf}, Categoria: ${this.#categoria}`;
+        return `Atleta: ${this.#nome}, CPF: ${this.#cpf}, Data Nascimento: ${this.#dataNascimento}`;
     }
 }

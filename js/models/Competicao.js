@@ -15,43 +15,43 @@ export class Competicao {
         this.#atletas = [];
     }
 
-    getId() {
+    get id() {
         return this.#id;
     }
 
-    getNome() {
+    get nome() {
         return this.#nome;
     }
 
-    getData() {
+    get data() {
         return this.#data;
     }
 
-    getLocal() {
+    get local() {
         return this.#local;
     }
 
-    getDistancia() {
+    get distancia() {
         return this.#distancia;
     }
 
-    getAtletas() {
+    get atletas() {
         return this.#atletas;
     }
 
-    setNome(nome) {
+    set nome(nome) {
         this.#nome = nome;
     }
 
-    setData(data) {
+    set data(data) {
         this.#data = data;
     }
 
-    setLocal(local) {
+    set local(local) {
         this.#local = local;
     }
 
-    setDistancia(distancia) {
+    set distancia(distancia) {
         this.#distancia = distancia;
     }
 

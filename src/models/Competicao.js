@@ -9,28 +9,32 @@ export class Competicao {
     #limiteAtletas;
     #valorInscricao;
     #tipo; // "maratona" ou "trailRunning"
-    #inscricoes; // Array de inscrições
+    #vetInscricoes; // Array de inscrições
     #organizador; // Associação com Organizador
+    #descricao;
 
-    constructor(nome, data, local, distanciaKm, limiteAtletas, valorInscricao, tipo, organizador) {
-        Competicao.#totalCompeticoes++;
-        this.#id = Competicao.#totalCompeticoes;
+    constructor(nome, data, local, distanciaKm, limiteAtletas, /* valorInscricao */ tipo, /* organizador, */ descricao) {
+       // Competicao.#totalCompeticoes++;
+       // this.#id = Competicao.#totalCompeticoes;
         this.#nome = nome;
         this.#data = data;
         this.#local = local;
         this.#distanciaKm = distanciaKm;
         this.#limiteAtletas = limiteAtletas;
-        this.#valorInscricao = valorInscricao;
-        this.#tipo = tipo;
-        this.#inscricoes = [];
+       // tirar this.#valorInscricao = valorInscricao;
+        this.#tipo = tipo; // "maratona" ou "trailRunning"
+        this.#vetInscricoes = [];
         this.#organizador = organizador;
+        //descricao 
+        this.#descricao = descricao;
+
     }
 
     // Getters
-    get id() {
+    /* get id() {
         return this.#id;
     }
-
+ */
     get nome() {
         return this.#nome;
     }
@@ -60,7 +64,7 @@ export class Competicao {
     }
 
     get inscricoes() {
-        return this.#inscricoes;
+        return this.#vetInscricoes;
     }
 
     get organizador() {
@@ -97,36 +101,38 @@ export class Competicao {
     }
 
     // Métodos
-    adicionarInscricao(inscricao) {
-        if (this.#inscricoes.length < this.#limiteAtletas) {
-            this.#inscricoes.push(inscricao);
+    cadastrarCompeticao() {
+
+
+
+    }
+
+    adicionarCompetidor(competidor) {
+        if (this.#vetInscricoes.length < this.#limiteAtletas) {
+            this.#vetInscricoes.push(competidor);
             return true;
         }
         return false;
     }
 
     removerInscricao(inscricaoId) {
-        this.#inscricoes = this.#inscricoes.filter(insc => insc.id !== inscricaoId);
+        this.#vetInscricoes = this.#vetInscricoes.filter(insc => insc.id !== inscricaoId);
     }
 
     vagasDisponiveis() {
-        return this.#limiteAtletas - this.#inscricoes.length;
+        return this.#limiteAtletas - this.#vetInscricoes.length;
     }
 
     totalInscritos() {
-        return this.#inscricoes.length;
+        return this.#vetInscricoes.length;
     }
-
-    getIcone() {
-        return this.#tipo === "maratona" ? "🏃" : "⛰️";
-    }
-
+    
     getDataFormatada() {
         const data = new Date(this.#data);
         return data.toLocaleDateString('pt-BR');
     }
 
     toString() {
-        return `${this.getIcone()} ${this.#nome} | Data: ${this.getDataFormatada()} | Local: ${this.#local} | ${this.#distanciaKm}km | Inscritos: ${this.totalInscritos()}/${this.#limiteAtletas}`;
+        return `${this.#nome} | Data: ${this.getDataFormatada()} | Local: ${this.#local} | ${this.#distanciaKm}km | Inscritos: ${this.totalInscritos()}/${this.#limiteAtletas}`;
     }
 }

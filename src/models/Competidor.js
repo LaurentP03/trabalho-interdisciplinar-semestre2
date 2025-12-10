@@ -8,7 +8,7 @@ export class Competidor {
     #data_inscricao;
     #atleta;
     #competicao;
-    #statusPagamento; // Pendente, Pago, Cancelado
+  
     #tempoProva;
     #posicao;
 
@@ -17,7 +17,7 @@ export class Competidor {
         this.#data_inscricao = data_inscricao;
         this.#atleta = atleta;
         this.#competicao = competicao;
-        this.#statusPagamento = "Pendente";
+    
         this.#tempoProva = null;
         this.#posicao = null;
 
@@ -43,20 +43,12 @@ export class Competidor {
         return this.#competicao;
     }
 
-    get statusPagamento() {
-        return this.#statusPagamento;
-    }
-
     get tempoProva() {
         return this.#tempoProva;
     }
 
     get posicao() {
         return this.#posicao;
-    }
-
-    set statusPagamento(novoStatus) {
-        this.#statusPagamento = novoStatus;
     }
 
     set tempoProva(novoTempo) {
@@ -67,24 +59,9 @@ export class Competidor {
         this.#posicao = novaPosicao;
     }
 
-    // Método para confirmar pagamento
-    confirmarPagamento() {
-        this.#statusPagamento = "Pago";
-    }
-
-    // Método para cancelar inscrição
-    cancelarInscricao() {
-        this.#statusPagamento = "Cancelado";
-    }
-
-    // Método para registrar resultado
-    registrarResultado(tempo, posicao) {
-        this.#tempoProva = tempo;
-        this.#posicao = posicao;
-    }
-
+ 
     // Método toString
     toString() {
-        return `Nº Peito: ${this.#numeroPeito} | Atleta: ${this.#atleta.nome} | Competição: ${this.#competicao.nome} | Status: ${this.#statusPagamento} | Tempo: ${this.#tempoProva || 'N/A'} | Posição: ${this.#posicao || 'N/A'}`;
+        return `Nº Peito: ${this.#numeroPeito} | Atleta: ${this.#atleta.nome} | Competição: ${this.#competicao.nome} | Tempo: ${this.#tempoProva || 'N/A'} | Posição: ${this.#posicao || 'N/A'}`;
     }
 }

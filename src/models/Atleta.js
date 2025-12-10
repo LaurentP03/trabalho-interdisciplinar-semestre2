@@ -8,7 +8,7 @@ export class Atleta extends Pessoa {
     constructor(nome, cpf, dataNascimento, email, telefone, categoria) {
         super(nome, cpf, dataNascimento, email, telefone);
         this.#categoria = categoria;
-        this.#inscricoes = [];
+        this.#inscricoes = [];//inscricoes q o atleta fez
     }
 
     // Getters

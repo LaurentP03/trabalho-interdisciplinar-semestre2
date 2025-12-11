@@ -1,7 +1,7 @@
-const tbody = document.getElementById('corpoTabelaAtletas');
-const formulario = document.getElementById('formularioAtleta');
-const form = document.getElementById('formAtleta');
-const tituloFormulario = document.getElementById('tituloFormulario');
+let tbody = document.getElementById('corpoTabelaAtletas');
+let formulario = document.getElementById('formularioAtleta');
+let form = document.getElementById('formAtleta');
+let tituloFormulario = document.getElementById('tituloFormulario');
 
 export function renderizarTabela(atletas) {
     if (!tbody) return;
@@ -11,29 +11,39 @@ export function renderizarTabela(atletas) {
         return;
     }
 
-    tbody.innerHTML = atletas.map(a => `
-        <tr>
-            <td>${a.id}</td>
-            <td>${a.nome}</td>
-            <td>${a.cpf}</td>
-            <td>${formatarData(a.dataNascimento)}</td>
-            <td>
-                <button class="btn-acao btn-editar" data-action="editar" data-id="${a.id}">✏️</button>
-                <button class="btn-acao btn-excluir" data-action="excluir" data-id="${a.id}">🗑️</button>
-            </td>
-        </tr>
-    `).join('');
+    let html = '';
+    atletas.forEach(function(a) {
+        html = html + '<tr>';
+        html = html + '<td>' + a.id + '</td>';
+        html = html + '<td>' + a.nome + '</td>';
+        html = html + '<td>' + a.cpf + '</td>';
+        html = html + '<td>' + formatarData(a.dataNascimento) + '</td>';
+        html = html + '<td>';
+        html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + a.id + '">✏️</button>';
+        html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + a.id + '">🗑️</button>';
+        html = html + '</td>';
+        html = html + '</tr>';
+    });
+    
+    tbody.innerHTML = html;
 }
 
 export function abrirFormulario(modo) {
     if (!formulario) return;
+    
     formulario.style.display = 'block';
-    tituloFormulario.textContent = modo === 'editar' ? 'Editar Atleta' : 'Cadastrar Novo Atleta';
+    
+    if (modo === 'editar') {
+        tituloFormulario.textContent = 'Editar Atleta';
+    } else {
+        tituloFormulario.textContent = 'Cadastrar Novo Atleta';
+    }
+    
     if (modo === 'criar') {
         if (form) {
             form.reset();
         }
-        const cpfElement = document.getElementById('cpf');
+        let cpfElement = document.getElementById('cpf');
         if (cpfElement) {
             cpfElement.disabled = false;
         }
@@ -41,33 +51,43 @@ export function abrirFormulario(modo) {
 }
 
 export function fecharFormulario() {
-    if (formulario) formulario.style.display = 'none';
+    if (formulario) {
+        formulario.style.display = 'none';
+    }
     if (form) {
         form.reset();
     }
 }
 
 export function preencherFormulario(atleta) {
-    const atletaIdElement = document.getElementById('atletaId');
-    const nomeElement = document.getElementById('nome');
-    const cpfElement = document.getElementById('cpf');
-    const dataNascimentoElement = document.getElementById('dataNascimento');
-    const btnSalvarElement = document.getElementById('btnSalvar');
+    let atletaIdElement = document.getElementById('atletaId');
+    let nomeElement = document.getElementById('nome');
+    let cpfElement = document.getElementById('cpf');
+    let dataNascimentoElement = document.getElementById('dataNascimento');
+    let btnSalvarElement = document.getElementById('btnSalvar');
     
-    if (atletaIdElement) atletaIdElement.value = atleta.id;
-    if (nomeElement) nomeElement.value = atleta.nome;
+    if (atletaIdElement) {
+        atletaIdElement.value = atleta.id;
+    }
+    if (nomeElement) {
+        nomeElement.value = atleta.nome;
+    }
     if (cpfElement) {
         cpfElement.value = atleta.cpf;
         cpfElement.disabled = true;
     }
-    if (dataNascimentoElement) dataNascimentoElement.value = atleta.dataNascimento;
-    if (btnSalvarElement) btnSalvarElement.textContent = 'Atualizar';
+    if (dataNascimentoElement) {
+        dataNascimentoElement.value = atleta.dataNascimento;
+    }
+    if (btnSalvarElement) {
+        btnSalvarElement.textContent = 'Atualizar';
+    }
 }
 
 export function obterDadosFormulario() {
-    const nomeElement = document.getElementById('nome');
-    const cpfElement = document.getElementById('cpf');
-    const dataNascimentoElement = document.getElementById('dataNascimento');
+    let nomeElement = document.getElementById('nome');
+    let cpfElement = document.getElementById('cpf');
+    let dataNascimentoElement = document.getElementById('dataNascimento');
     
     return {
         nome: nomeElement ? nomeElement.value : '',
@@ -81,26 +101,18 @@ export function validarDataNascimento(data) {
         return { valido: false, mensagem: 'Data de nascimento é obrigatória!' };
     }
 
-    const partes = data.split('-');
-    if (partes.length !== 3) {
-        return { valido: false, mensagem: 'Formato de data inválido!' };
+    let partes = data.split('-');
+    let ano = parseInt(partes[0]);
+    let mes = parseInt(partes[1]);
+    let dia = parseInt(partes[2]);
+
+    let anoAtual = new Date().getFullYear();
+
+    if (ano > anoAtual) {
+        return { valido: false, mensagem: 'A data de nascimento não pode ser futura!' };
     }
 
-    const ano = partes[0];
-    const mes = parseInt(partes[1]);
-    const dia = parseInt(partes[2]);
-
-    if (ano.length !== 4 || isNaN(parseInt(ano))) {
-        return { valido: false, mensagem: 'O ano deve ter exatamente 4 dígitos!' };
-    }
-
-    const anoNumero = parseInt(ano);
-
-    if (anoNumero > 2025) {
-        return { valido: false, mensagem: 'A data de nascimento não pode ser posterior a 2025!' };
-    }
-
-    if (anoNumero < 1900) {
+    if (ano < 1900) {
         return { valido: false, mensagem: 'O ano deve ser 1900 ou posterior!' };
     }
 
@@ -112,33 +124,44 @@ export function validarDataNascimento(data) {
         return { valido: false, mensagem: 'Dia inválido!' };
     }
 
-    const dataInformada = new Date(anoNumero, mes - 1, dia);
-    const dataAtual = new Date();
-    dataAtual.setHours(0, 0, 0, 0);
+    if (mes == 2) {
+        let bissexto = (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
+        if (bissexto && dia > 29) {
+            return { valido: false, mensagem: 'Fevereiro só tem 29 dias em ano bissexto!' };
+        }
+        if (!bissexto && dia > 28) {
+            return { valido: false, mensagem: 'Fevereiro só tem 28 dias!' };
+        }
+    }
 
-    if (dataInformada > dataAtual) {
-        return { valido: false, mensagem: 'A data de nascimento não pode ser futura!' };
+    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
+        return { valido: false, mensagem: 'Este mês só tem 30 dias!' };
+    }
+
+    let idade = anoAtual - ano;
+    if (idade < 5) {
+        return { valido: false, mensagem: 'O atleta deve ter pelo menos 5 anos!' };
     }
 
     return { valido: true };
 }
 
-export function mostrarMensagem(msg, tipo = 'sucesso') {
+export function mostrarMensagem(msg, tipo) {
     alert(msg);
 }
 
 function formatarData(data) {
-    const partes = data.split('-');
-    const ano = partes[0];
-    const mes = partes[1];
-    const dia = partes[2];
-    return `${dia}/${mes}/${ano}`;
+    let partes = data.split('-');
+    let ano = partes[0];
+    let mes = partes[1];
+    let dia = partes[2];
+    return dia + '/' + mes + '/' + ano;
 }
 
 export function configurarMascaraCPF() {
-    const cpfInput = document.getElementById('cpf');
+    let cpfInput = document.getElementById('cpf');
     if (cpfInput) {
-        cpfInput.addEventListener('input', (e) => {
+        cpfInput.addEventListener('input', function(e) {
             let valor = e.target.value.replace(/\D/g, '');
             if (valor.length <= 11) {
                 valor = valor.replace(/(\d{3})(\d)/, '$1.$2');

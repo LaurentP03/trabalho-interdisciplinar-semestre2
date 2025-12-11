@@ -9,7 +9,7 @@ let carregado = false;
 
 function salvar() {
     try {
-        const atletasParaSalvar = atletas.map(a => {
+        let atletasParaSalvar = atletas.map(function(a) {
             return {
                 id: a.id,
                 nome: a.nome,
@@ -17,7 +17,8 @@ function salvar() {
                 dataNascimento: a.dataNascimento
             };
         });
-        const dados = JSON.stringify(atletasParaSalvar);
+        
+        let dados = JSON.stringify(atletasParaSalvar);
         localStorage.setItem('atletas', dados);
         localStorage.setItem('atletasId', proximoId.toString());
     } catch (error) {
@@ -29,13 +30,15 @@ function carregar() {
     if (carregado) return;
     
     try {
-        const dados = localStorage.getItem('atletas');
+        let dados = localStorage.getItem('atletas');
         if (dados) {
-            const atletasCarregados = JSON.parse(dados);
-            atletas = atletasCarregados.map(a => {
+            let atletasCarregados = JSON.parse(dados);
+            
+            atletas = atletasCarregados.map(function(a) {
                 return new Atleta(a.id, a.nome, a.cpf, a.dataNascimento);
             });
-            const id = localStorage.getItem('atletasId');
+            
+            let id = localStorage.getItem('atletasId');
             proximoId = id ? parseInt(id) : 1;
             carregado = true;
             console.log('✓ Atletas carregados do localStorage:', atletas.length);
@@ -54,37 +57,43 @@ export function inicializar() {
 }
 
 function configurarEventos() {
-    const btnNovoAtleta = document.getElementById('btnNovoAtleta');
+    let btnNovoAtleta = document.getElementById('btnNovoAtleta');
     if (btnNovoAtleta) {
-        btnNovoAtleta.addEventListener('click', () => {
+        btnNovoAtleta.addEventListener('click', function() {
             modoEdicao = false;
             idEmEdicao = null;
             abrirFormulario('criar');
         });
     }
 
-    const btnCancelar = document.getElementById('btnCancelar');
+    let btnCancelar = document.getElementById('btnCancelar');
     if (btnCancelar) {
-        btnCancelar.addEventListener('click', () => fecharFormulario());
+        btnCancelar.addEventListener('click', function() {
+            fecharFormulario();
+        });
     }
 
-    const formAtleta = document.getElementById('formAtleta');
+    let formAtleta = document.getElementById('formAtleta');
     if (formAtleta) {
-        formAtleta.addEventListener('submit', (e) => {
+        formAtleta.addEventListener('submit', function(e) {
             e.preventDefault();
-            const dados = obterDadosFormulario();
-            const nome = dados.nome;
-            const cpf = dados.cpf;
-            const dataNascimento = dados.dataNascimento;
+            
+            let dados = obterDadosFormulario();
+            let nome = dados.nome;
+            let cpf = dados.cpf;
+            let dataNascimento = dados.dataNascimento;
 
-            const validacao = validarDataNascimento(dataNascimento);
+            let validacao = validarDataNascimento(dataNascimento);
             if (!validacao.valido) {
                 mostrarMensagem(validacao.mensagem, 'erro');
                 return;
             }
 
             if (modoEdicao) {
-                const atleta = atletas.find(a => a.id === idEmEdicao);
+                let atleta = atletas.find(function(a) {
+                    return a.id === idEmEdicao;
+                });
+                
                 if (atleta) {
                     atleta.nome = nome;
                     atleta.dataNascimento = dataNascimento;
@@ -92,48 +101,58 @@ function configurarEventos() {
                     mostrarMensagem('Atleta atualizado!');
                 }
             } else {
-                const atletaExistente = atletas.find(a => a.cpf === cpf);
+                let atletaExistente = atletas.find(function(a) {
+                    return a.cpf === cpf;
+                });
+                
                 if (atletaExistente) {
                     mostrarMensagem('CPF já cadastrado!', 'erro');
                     return;
                 }
-                const novoAtleta = new Atleta(proximoId++, nome, cpf, dataNascimento);
+                
+                let novoAtleta = new Atleta(proximoId++, nome, cpf, dataNascimento);
                 atletas.push(novoAtleta);
                 salvar();
                 mostrarMensagem('Atleta cadastrado!');
             }
+            
             fecharFormulario();
             renderizarTabela(atletas);
         });
     }
 
-    const campoBusca = document.getElementById('campoBusca');
+    let campoBusca = document.getElementById('campoBusca');
     if (campoBusca) {
-        campoBusca.addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase().trim();
+        campoBusca.addEventListener('input', function(e) {
+            let termo = e.target.value.toLowerCase().trim();
+            
             if (!termo) {
                 renderizarTabela(atletas);
                 return;
             }
-            const filtrados = atletas.filter(a => 
-                a.nome.toLowerCase().includes(termo) || 
-                a.cpf.includes(termo)
-            );
+            
+            let filtrados = atletas.filter(function(a) {
+                return a.nome.toLowerCase().includes(termo) || a.cpf.includes(termo);
+            });
+            
             renderizarTabela(filtrados);
         });
     }
 
-    const corpoTabelaAtletas = document.getElementById('corpoTabelaAtletas');
+    let corpoTabelaAtletas = document.getElementById('corpoTabelaAtletas');
     if (corpoTabelaAtletas) {
-        corpoTabelaAtletas.addEventListener('click', (e) => {
-            const btn = e.target.closest('button');
+        corpoTabelaAtletas.addEventListener('click', function(e) {
+            let btn = e.target.closest('button');
             if (!btn) return;
 
-            const id = parseInt(btn.dataset.id);
-            const action = btn.dataset.action;
+            let id = parseInt(btn.dataset.id);
+            let action = btn.dataset.action;
             
             if (action === 'editar') {
-                const atleta = atletas.find(a => a.id === id);
+                let atleta = atletas.find(function(a) {
+                    return a.id === id;
+                });
+                
                 if (atleta) {
                     modoEdicao = true;
                     idEmEdicao = id;
@@ -142,7 +161,9 @@ function configurarEventos() {
                 }
             } else if (action === 'excluir') {
                 if (confirm('Excluir atleta?')) {
-                    atletas = atletas.filter(a => a.id !== id);
+                    atletas = atletas.filter(function(a) {
+                        return a.id !== id;
+                    });
                     salvar();
                     mostrarMensagem('Atleta excluído!');
                     renderizarTabela(atletas);
@@ -153,22 +174,25 @@ function configurarEventos() {
 }
 
 function carregarExemplos() {
-    const exemplos = [
+    let exemplos = [
         { nome: 'João Silva', cpf: '123.456.789-00', dataNascimento: '1990-05-15' },
         { nome: 'Maria Santos', cpf: '987.654.321-00', dataNascimento: '1985-08-20' },
         { nome: 'Pedro Costa', cpf: '456.789.123-00', dataNascimento: '2005-03-10' }
     ];
     
-    exemplos.forEach(d => {
-        const novoAtleta = new Atleta(proximoId++, d.nome, d.cpf, d.dataNascimento);
+    exemplos.forEach(function(d) {
+        let novoAtleta = new Atleta(proximoId++, d.nome, d.cpf, d.dataNascimento);
         atletas.push(novoAtleta);
     });
+    
     salvar();
 }
 
 export function buscarPorId(id) {
     carregar();
-    return atletas.find(a => a.id === id);
+    return atletas.find(function(a) {
+        return a.id === id;
+    });
 }
 
 export function listar() {

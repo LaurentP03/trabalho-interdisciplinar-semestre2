@@ -31,7 +31,7 @@ export function renderizarRelatorio(competicoes) {
     competicoes.forEach(function(comp) {
         html = html + '<tr>';
         html = html + '<td>' + comp.nome + '</td>';
-        html = html + '<td>' + comp.atletas.length + '</td>';
+        html = html + '<td>' + comp.totalInscritos + '</td>';
         html = html + '</tr>';
     });
 

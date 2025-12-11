@@ -1,16 +1,23 @@
 import * as competicaoController from './CompeticaoController.js';
 import * as atletaController from './AtletaController.js';
+import * as competidorController from './CompetidorController.js';
 import { Maratona } from '../models/Maratona.js';
 import { renderizarCompeticoes, renderizarAtletas, selecionarCompeticao, selecionarAtleta, obterSelecao, limparSelecao, esconderListas, mostrarMensagem } from '../views/inscricoesView.js';
 
 export function inicializar() {
+    // Garante que os dados estão carregados antes de configurar eventos
+    competicaoController.carregarDadosExemplo();
+    atletaController.carregarDadosExemplo();
+    competidorController.inicializar();
+    
+    // Pequeno delay para garantir que tudo foi carregado
     setTimeout(function() {
         configurarEventos();
         
         console.log('=== INSCRIÇÕES INICIALIZADAS ===');
-        console.log('Competições:', competicaoController.listar());
-        console.log('Atletas:', atletaController.listar());
-    }, 150);
+        console.log('Competições:', competicaoController.listar().length);
+        console.log('Atletas:', atletaController.listar().length);
+    }, 100);
 }
 
 function formatarCompeticaoParaView(comp) {
@@ -33,6 +40,10 @@ function configurarEventos() {
             let idCompeticao = selecao.idCompeticao;
             let idAtleta = selecao.idAtleta;
 
+            console.log('=== TENTANDO INSCREVER ===');
+            console.log('ID Competição:', idCompeticao);
+            console.log('ID Atleta:', idAtleta);
+
             if (!idCompeticao || !idAtleta) {
                 mostrarMensagem('Selecione uma competição e um atleta!', 'erro');
                 return;
@@ -44,25 +55,41 @@ function configurarEventos() {
                 return;
             }
 
-            if (comp.atletas.includes(idAtleta)) {
-                mostrarMensagem('Atleta já está inscrito nesta competição!', 'erro');
+            let atleta = atletaController.buscarPorId(idAtleta);
+            if (!atleta) {
+                mostrarMensagem('Atleta não encontrado!', 'erro');
                 return;
             }
 
-            competicaoController.adicionarAtletaCompeticao(idCompeticao, idAtleta);
-            let atleta = atletaController.buscarPorId(idAtleta);
-            mostrarMensagem(atleta.nome + ' inscrito em ' + comp.nome + ' com sucesso!', 'sucesso');
-            limparSelecao();
+            // Primeiro inscreve no sistema de competidores
+            let resultado = competidorController.inscreverAtleta(idAtleta, idCompeticao);
+            
+            if (resultado.sucesso) {
+                // Depois adiciona o atleta na competição
+                let resultadoComp = competicaoController.adicionarAtletaCompeticao(idCompeticao, idAtleta);
+                
+                if (resultadoComp.sucesso) {
+                    mostrarMensagem('✓ ' + atleta.nome + ' inscrito em ' + comp.nome + ' com sucesso!', 'sucesso');
+                    limparSelecao();
+                    
+                    console.log('=== INSCRIÇÃO REALIZADA ===');
+                    console.log('Atleta:', atleta.nome);
+                    console.log('Competição:', comp.nome);
+                } else {
+                    mostrarMensagem(resultadoComp.mensagem, 'erro');
+                }
+            } else {
+                mostrarMensagem(resultado.mensagem, 'erro');
+            }
         });
     }
 
     let inputCompeticao = document.getElementById('buscaCompeticao');
     if (inputCompeticao) {
-        console.log('Input de competição encontrado');
+        console.log('✓ Input de competição encontrado');
         
         inputCompeticao.addEventListener('input', function(e) {
             let termo = e.target.value.toLowerCase().trim();
-            console.log('>>> Buscando competição:', termo);
             
             if (termo.length < 1) {
                 esconderListas();
@@ -70,28 +97,27 @@ function configurarEventos() {
             }
             
             let todasCompeticoes = competicaoController.listar();
-            console.log('>>> Total disponível:', todasCompeticoes.length);
+            console.log('Buscando competição. Total disponível:', todasCompeticoes.length);
             
             let resultados = todasCompeticoes.filter(function(c) {
                 return c.nome.toLowerCase().includes(termo) || c.local.toLowerCase().includes(termo);
             });
             
-            console.log('>>> Resultados:', resultados.length);
+            console.log('Resultados encontrados:', resultados.length);
             
             let competicoesFormatadas = resultados.map(formatarCompeticaoParaView);
             renderizarCompeticoes(competicoesFormatadas);
         });
     } else {
-        console.error('Input de competição NÃO encontrado!');
+        console.error('✗ Input de competição NÃO encontrado!');
     }
 
     let inputAtleta = document.getElementById('buscaAtleta');
     if (inputAtleta) {
-        console.log('Input de atleta encontrado');
+        console.log('✓ Input de atleta encontrado');
         
         inputAtleta.addEventListener('input', function(e) {
             let termo = e.target.value.toLowerCase().trim();
-            console.log('>>> Buscando atleta:', termo);
             
             if (termo.length < 1) {
                 esconderListas();
@@ -99,17 +125,17 @@ function configurarEventos() {
             }
             
             let todosAtletas = atletaController.listar();
-            console.log('>>> Total disponível:', todosAtletas.length);
+            console.log('Buscando atleta. Total disponível:', todosAtletas.length);
             
             let resultados = todosAtletas.filter(function(a) {
                 return a.nome.toLowerCase().includes(termo) || a.cpf.includes(termo);
             });
             
-            console.log('>>> Resultados:', resultados.length);
+            console.log('Resultados encontrados:', resultados.length);
             renderizarAtletas(resultados);
         });
     } else {
-        console.error('Input de atleta NÃO encontrado!');
+        console.error('✗ Input de atleta NÃO encontrado!');
     }
 
     let listaCompeticoesEl = document.getElementById('listaCompeticoes');
@@ -121,6 +147,7 @@ function configurarEventos() {
                 if (comp) {
                     let compFormatada = formatarCompeticaoParaView(comp);
                     selecionarCompeticao(compFormatada);
+                    console.log('Competição selecionada:', compFormatada.nome);
                 }
             }
         });
@@ -134,6 +161,7 @@ function configurarEventos() {
                 let atleta = atletaController.buscarPorId(parseInt(item.dataset.id));
                 if (atleta) {
                     selecionarAtleta(atleta);
+                    console.log('Atleta selecionado:', atleta.nome);
                 }
             }
         });

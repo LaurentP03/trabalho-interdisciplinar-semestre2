@@ -1,8 +1,4 @@
-// js/services/StorageService.js
-// Responsável por gerenciar TODA a comunicação com localStorage
-
 export const StorageService = {
-    // ==== ATLETAS ====
     carregarAtletas() {
         try {
             const dados = localStorage.getItem('atletas');
@@ -30,7 +26,6 @@ export const StorageService = {
         localStorage.setItem('atletasId', id.toString());
     },
 
-    // ==== COMPETIÇÕES ====
     carregarCompeticoes() {
         try {
             const dados = localStorage.getItem('competicoes');
@@ -58,7 +53,6 @@ export const StorageService = {
         localStorage.setItem('competicoesId', id.toString());
     },
 
-    // ==== COMPETIDORES (INSCRIÇÕES) ====
     carregarCompetidores() {
         try {
             const dados = localStorage.getItem('competidores');
@@ -86,7 +80,6 @@ export const StorageService = {
         localStorage.setItem('competidoresId', id.toString());
     },
 
-    // ==== UTILITÁRIOS ====
     limparTudo() {
         localStorage.clear();
     }

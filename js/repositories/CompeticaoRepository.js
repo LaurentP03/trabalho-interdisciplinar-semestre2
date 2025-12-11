@@ -1,6 +1,3 @@
-// js/repositories/CompeticaoRepository.js
-// Responsável pela lógica de negócio das competições
-
 import { Maratona } from '../models/Maratona.js';
 import { TrailRunning } from '../models/TrailRunning.js';
 import { StorageService } from '../services/StorageService.js';
@@ -25,7 +22,6 @@ class CompeticaoRepositoryClass {
                 comp = new TrailRunning(c.id, c.nome, c.data, c.local, c.distancia);
             }
             
-            // Restaurar atletas
             c.atletas.forEach(idAtleta => comp.adicionarAtleta(idAtleta));
             
             return comp;
@@ -109,14 +105,12 @@ class CompeticaoRepositoryClass {
         this.carregar();
         let filtradas = this.competicoes;
         
-        // Filtrar por tipo
         if (tipo === 'maratona') {
             filtradas = filtradas.filter(c => c instanceof Maratona);
         } else if (tipo === 'trail') {
             filtradas = filtradas.filter(c => c instanceof TrailRunning);
         }
         
-        // Filtrar por termo de busca
         if (termo) {
             const termoLower = termo.toLowerCase().trim();
             filtradas = filtradas.filter(c =>
@@ -171,7 +165,6 @@ class CompeticaoRepositoryClass {
         console.log('✓ Exemplos de competições carregados');
     }
 
-    // Método auxiliar para formatar para view
     prepararParaView(competicoes) {
         return competicoes.map(c => ({
             id: c.id,
@@ -185,5 +178,4 @@ class CompeticaoRepositoryClass {
     }
 }
 
-// Exportar instância única (Singleton)
 export const CompeticaoRepository = new CompeticaoRepositoryClass();

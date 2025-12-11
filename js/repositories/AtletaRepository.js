@@ -1,6 +1,3 @@
-// js/repositories/AtletaRepository.js
-// Responsável pela lógica de negócio dos atletas
-
 import { Atleta } from '../models/Atleta.js';
 import { StorageService } from '../services/StorageService.js';
 
@@ -40,7 +37,6 @@ class AtletaRepositoryClass {
     criar(nome, cpf, dataNascimento) {
         this.carregar();
         
-        // Validar CPF único
         const atletaExistente = this.atletas.find(a => a.cpf === cpf);
         if (atletaExistente) {
             return { sucesso: false, mensagem: 'CPF já cadastrado!' };
@@ -121,5 +117,4 @@ class AtletaRepositoryClass {
     }
 }
 
-// Exportar instância única (Singleton)
 export const AtletaRepository = new AtletaRepositoryClass();

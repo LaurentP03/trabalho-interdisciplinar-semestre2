@@ -1,11 +1,9 @@
-// js/controllers/DashboardController.js (REFATORADO)
 import { CompeticaoRepository } from '../repositories/CompeticaoRepository.js';
 import { AtletaRepository } from '../repositories/AtletaRepository.js';
 import { InscricaoRepository } from '../repositories/InscricaoRepository.js';
 import { renderizarEstatisticas } from '../views/dashboardView.js';
 
 export function inicializar() {
-    // Garantir que todos os dados estão carregados
     CompeticaoRepository.carregar();
     CompeticaoRepository.carregarExemplos();
     

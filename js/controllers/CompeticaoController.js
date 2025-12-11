@@ -1,4 +1,3 @@
-// js/controllers/CompeticaoController.js (REFATORADO)
 import { CompeticaoRepository } from '../repositories/CompeticaoRepository.js';
 import { AtletaRepository } from '../repositories/AtletaRepository.js';
 import { InscricaoRepository } from '../repositories/InscricaoRepository.js';
@@ -83,7 +82,6 @@ function handleSubmit() {
     const dados = obterDadosFormulario();
     const { nome, data, local, distancia, tipo } = dados;
 
-    // Validar data
     const validacao = validarDataCompeticao(data);
     if (!validacao.valido) {
         mostrarMensagem(validacao.mensagem, 'erro');
@@ -117,7 +115,6 @@ function handleVerAtletas(idCompeticao) {
     const comp = CompeticaoRepository.buscarPorId(idCompeticao);
     if (!comp) return;
 
-    // Buscar atletas inscritos
     const inscricoes = InscricaoRepository.listarPorCompeticao(idCompeticao);
     
     const atletasCompletos = inscricoes

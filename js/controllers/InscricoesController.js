@@ -1,4 +1,3 @@
-// js/controllers/InscricoesController.js (REFATORADO)
 import { CompeticaoRepository } from '../repositories/CompeticaoRepository.js';
 import { AtletaRepository } from '../repositories/AtletaRepository.js';
 import { InscricaoRepository } from '../repositories/InscricaoRepository.js';
@@ -82,7 +81,6 @@ function handleInscrever() {
         return;
     }
 
-    // Criar inscrição
     const resultadoInscricao = InscricaoRepository.criar(idAtleta, idCompeticao);
 
     if (!resultadoInscricao.sucesso) {
@@ -90,7 +88,6 @@ function handleInscrever() {
         return;
     }
 
-    // Adicionar atleta na competição
     const resultadoComp = CompeticaoRepository.adicionarAtleta(idCompeticao, idAtleta);
 
     if (resultadoComp.sucesso) {

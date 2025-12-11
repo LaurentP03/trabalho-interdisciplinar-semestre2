@@ -1,6 +1,3 @@
-// js/repositories/InscricaoRepository.js
-// Responsável pela lógica de negócio das inscrições (competidores)
-
 import { Competidor } from '../models/Competidor.js';
 import { StorageService } from '../services/StorageService.js';
 
@@ -58,13 +55,11 @@ class InscricaoRepositoryClass {
     criar(idAtleta, idCompeticao) {
         this.carregar();
         
-        // Validar
         const validacao = this.validarInscricao(idAtleta, idCompeticao);
         if (!validacao.valido) {
             return { sucesso: false, mensagem: validacao.mensagem };
         }
         
-        // Data de hoje
         const dataHoje = new Date();
         const ano = dataHoje.getFullYear();
         const mes = String(dataHoje.getMonth() + 1).padStart(2, '0');
@@ -143,5 +138,4 @@ class InscricaoRepositoryClass {
     }
 }
 
-// Exportar instância única (Singleton)
 export const InscricaoRepository = new InscricaoRepositoryClass();

@@ -2,6 +2,8 @@ let tbody = document.getElementById('corpoTabelaCompeticoes');
 let formulario = document.getElementById('formularioCompeticao');
 let form = document.getElementById('formCompeticao');
 let tituloFormulario = document.getElementById('tituloFormulario');
+let modalAtletas = document.getElementById('modalAtletas');
+let btnFecharModal = document.getElementById('btnFecharModal');
 
 export function renderizarTabela(competicoes) {
     if (!tbody) return;
@@ -22,6 +24,7 @@ export function renderizarTabela(competicoes) {
         html = html + '<td>' + c.tipoFormatado + '</td>';
         html = html + '<td>' + c.atletas.length + '</td>';
         html = html + '<td>';
+        html = html + '<button class="btn-ver-atletas" data-action="ver-atletas" data-id="' + c.id + '" title="Ver atletas inscritos">👥 Ver</button> ';
         html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + c.id + '">✏️</button>';
         html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + c.id + '">🗑️</button>';
         html = html + '</td>';
@@ -161,6 +164,64 @@ export function validarDataCompeticao(data) {
 export function mostrarMensagem(msg, tipo) {
     alert(msg);
 }
+
+export function abrirModalAtletas(competicao, atletas) {
+    if (!modalAtletas) return;
+
+    let modalNome = document.getElementById('modalNomeCompeticao');
+    let modalData = document.getElementById('modalDataCompeticao');
+    let modalLocal = document.getElementById('modalLocalCompeticao');
+    let modalTotal = document.getElementById('modalTotalAtletas');
+    let listaAtletasModal = document.getElementById('listaAtletasModal');
+
+    if (modalNome) modalNome.textContent = competicao.nome;
+    if (modalData) modalData.textContent = formatarData(competicao.data);
+    if (modalLocal) modalLocal.textContent = competicao.local;
+    if (modalTotal) modalTotal.textContent = atletas.length;
+
+    if (listaAtletasModal) {
+        if (atletas.length === 0) {
+            listaAtletasModal.innerHTML = '<div class="atleta-vazio">📭 Nenhum atleta inscrito ainda</div>';
+        } else {
+            let html = '';
+            atletas.forEach(function(a) {
+                html = html + '<div class="atleta-item">';
+                html = html + '<div class="atleta-info">';
+                html = html + '<div class="atleta-nome">🏃 ' + a.nome + '</div>';
+                html = html + '<div class="atleta-cpf">CPF: ' + a.cpf + '</div>';
+                html = html + '</div>';
+                html = html + '</div>';
+            });
+            listaAtletasModal.innerHTML = html;
+        }
+    }
+
+    modalAtletas.classList.add('ativo');
+}
+
+export function fecharModalAtletas() {
+    if (modalAtletas) {
+        modalAtletas.classList.remove('ativo');
+    }
+}
+
+if (btnFecharModal) {
+    btnFecharModal.addEventListener('click', fecharModalAtletas);
+}
+
+if (modalAtletas) {
+    modalAtletas.addEventListener('click', function(e) {
+        if (e.target === modalAtletas) {
+            fecharModalAtletas();
+        }
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModalAtletas();
+    }
+});
 
 function formatarData(data) {
     let partes = data.split('-');

@@ -1,6 +1,7 @@
 import { Maratona } from '../models/Maratona.js';
 import { TrailRunning } from '../models/TrailRunning.js';
-import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, validarDataCompeticao } from '../views/competicoesView.js';
+import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, validarDataCompeticao, abrirModalAtletas } from '../views/competicoesView.js';
+import * as atletaController from './AtletaController.js';
 
 let competicoes = [];
 let proximoId = 1;
@@ -11,7 +12,13 @@ let carregado = false;
 function salvar() {
     try {
         let competicoesParaSalvar = competicoes.map(function(c) {
-            let tipo = c instanceof Maratona ? 'maratona' : 'trail';
+            let tipo;
+            if (c instanceof Maratona) {
+                tipo = 'maratona';
+            } else {
+                tipo = 'trail';
+            }
+            
             return {
                 id: c.id,
                 nome: c.nome,
@@ -32,7 +39,9 @@ function salvar() {
 }
 
 function carregar() {
-    if (carregado) return;
+    if (carregado) {
+        return;
+    }
     
     try {
         let dados = localStorage.getItem('competicoes');
@@ -56,9 +65,13 @@ function carregar() {
             });
             
             let id = localStorage.getItem('competicoesId');
-            proximoId = id ? parseInt(id) : 1;
+            if (id) {
+                proximoId = parseInt(id);
+            } else {
+                proximoId = 1;
+            }
             carregado = true;
-            console.log('✓ Competições carregadas do localStorage:', competicoes.length);
+            console.log('Competições carregadas:', competicoes.length);
         }
     } catch (error) {
         console.error('Erro ao carregar competições:', error);
@@ -67,7 +80,13 @@ function carregar() {
 
 function prepararParaView(competicoes) {
     return competicoes.map(function(c) {
-        let tipoFormatado = c instanceof Maratona ? 'Maratona' : 'Trail Running';
+        let tipoFormatado;
+        if (c instanceof Maratona) {
+            tipoFormatado = 'Maratona';
+        } else {
+            tipoFormatado = 'Trail Running';
+        }
+        
         return {
             id: c.id,
             nome: c.nome,
@@ -82,7 +101,9 @@ function prepararParaView(competicoes) {
 
 export function inicializar() {
     carregar();
-    if (competicoes.length === 0) carregarExemplos();
+    if (competicoes.length === 0) {
+        carregarExemplos();
+    }
     configurarEventos();
     renderizarTabela(prepararParaView(competicoes));
 }
@@ -138,10 +159,11 @@ function configurarEventos() {
             } else {
                 let comp;
                 if (tipo === 'maratona') {
-                    comp = new Maratona(proximoId++, nome, data, local, distancia);
+                    comp = new Maratona(proximoId, nome, data, local, distancia);
                 } else {
-                    comp = new TrailRunning(proximoId++, nome, data, local, distancia);
+                    comp = new TrailRunning(proximoId, nome, data, local, distancia);
                 }
+                proximoId = proximoId + 1;
                 
                 competicoes.push(comp);
                 salvar();
@@ -171,12 +193,46 @@ function configurarEventos() {
     if (corpoTabelaCompeticoes) {
         corpoTabelaCompeticoes.addEventListener('click', function(e) {
             let btn = e.target.closest('button');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
 
             let id = parseInt(btn.dataset.id);
             let action = btn.dataset.action;
             
-            if (action === 'editar') {
+            if (action === 'ver-atletas') {
+                let comp = competicoes.find(function(c) {
+                    return c.id === id;
+                });
+                
+                if (comp) {
+                    let atletasCompletos = [];
+                    comp.atletas.forEach(function(idAtleta) {
+                        let atleta = atletaController.buscarPorId(idAtleta);
+                        if (atleta) {
+                            atletasCompletos.push(atleta);
+                        }
+                    });
+                    
+                    let tipoFormatado;
+                    if (comp instanceof Maratona) {
+                        tipoFormatado = 'Maratona';
+                    } else {
+                        tipoFormatado = 'Trail Running';
+                    }
+                    
+                    let compParaModal = {
+                        id: comp.id,
+                        nome: comp.nome,
+                        data: comp.data,
+                        local: comp.local,
+                        distancia: comp.distancia,
+                        tipoFormatado: tipoFormatado
+                    };
+                    
+                    abrirModalAtletas(compParaModal, atletasCompletos);
+                }
+            } else if (action === 'editar') {
                 let comp = competicoes.find(function(c) {
                     return c.id === id;
                 });
@@ -185,11 +241,18 @@ function configurarEventos() {
                     modoEdicao = true;
                     idEmEdicao = id;
                     abrirFormulario('editar');
-                    let tipo = comp instanceof Maratona ? 'maratona' : 'trail';
+                    
+                    let tipo;
+                    if (comp instanceof Maratona) {
+                        tipo = 'maratona';
+                    } else {
+                        tipo = 'trail';
+                    }
                     preencherFormulario(comp, tipo);
                 }
             } else if (action === 'excluir') {
-                if (confirm('Excluir competição?')) {
+                let confirma = confirm('Deseja realmente excluir esta competição?');
+                if (confirma) {
                     competicoes = competicoes.filter(function(c) {
                         return c.id !== id;
                     });
@@ -206,8 +269,15 @@ function filtrar() {
     let filtroTipoElement = document.getElementById('filtroTipo');
     let campoBuscaElement = document.getElementById('campoBusca');
     
-    let tipo = filtroTipoElement ? filtroTipoElement.value : 'todas';
-    let busca = campoBuscaElement ? campoBuscaElement.value.toLowerCase().trim() : '';
+    let tipo = 'todas';
+    if (filtroTipoElement) {
+        tipo = filtroTipoElement.value;
+    }
+    
+    let busca = '';
+    if (campoBuscaElement) {
+        busca = campoBuscaElement.value.toLowerCase().trim();
+    }
 
     let filtradas;
     if (tipo === 'todas') {
@@ -224,7 +294,11 @@ function filtrar() {
 
     if (busca) {
         filtradas = filtradas.filter(function(c) {
-            return c.nome.toLowerCase().includes(busca) || c.local.toLowerCase().includes(busca);
+            let nomeMinusculo = c.nome.toLowerCase();
+            let localMinusculo = c.local.toLowerCase();
+            let contemNome = nomeMinusculo.includes(busca);
+            let contemLocal = localMinusculo.includes(busca);
+            return contemNome || contemLocal;
         });
     }
 
@@ -232,13 +306,16 @@ function filtrar() {
 }
 
 function carregarExemplos() {
-    let maratonaSP = new Maratona(proximoId++, 'Maratona SP', '2025-06-15', 'São Paulo', 42);
+    let maratonaSP = new Maratona(proximoId, 'Maratona SP', '2025-06-15', 'São Paulo', 42);
+    proximoId = proximoId + 1;
     competicoes.push(maratonaSP);
     
-    let trailMantiqueira = new TrailRunning(proximoId++, 'Trail Mantiqueira', '2025-07-20', 'Campos do Jordão', 21);
+    let trailMantiqueira = new TrailRunning(proximoId, 'Trail Mantiqueira', '2025-07-20', 'Campos do Jordão', 21);
+    proximoId = proximoId + 1;
     competicoes.push(trailMantiqueira);
     
-    let maratonaRJ = new Maratona(proximoId++, 'Maratona RJ', '2025-08-10', 'Rio de Janeiro', 42);
+    let maratonaRJ = new Maratona(proximoId, 'Maratona RJ', '2025-08-10', 'Rio de Janeiro', 42);
+    proximoId = proximoId + 1;
     competicoes.push(maratonaRJ);
     
     salvar();
@@ -253,7 +330,6 @@ export function buscarPorId(id) {
 
 export function listar() {
     carregar();
-    console.log('listar() chamado - retornando', competicoes.length, 'competições');
     return competicoes;
 }
 
@@ -275,5 +351,7 @@ export function adicionarAtletaCompeticao(idCompeticao, idAtleta) {
 
 export function carregarDadosExemplo() {
     carregar();
-    if (competicoes.length === 0) carregarExemplos();
+    if (competicoes.length === 0) {
+        carregarExemplos();
+    }
 }

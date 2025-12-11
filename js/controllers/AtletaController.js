@@ -1,5 +1,7 @@
 import { Atleta } from '../models/Atleta.js';
-import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, configurarMascaraCPF, validarDataNascimento } from '../views/atletasView.js';
+import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, configurarMascaraCPF, validarDataNascimento, abrirModalCompeticoes } from '../views/atletasView.js';
+import * as competidorController from './CompetidorController.js';
+import * as competicaoController from './CompeticaoController.js';
 
 let atletas = [];
 let proximoId = 1;
@@ -27,7 +29,9 @@ function salvar() {
 }
 
 function carregar() {
-    if (carregado) return;
+    if (carregado) {
+        return;
+    }
     
     try {
         let dados = localStorage.getItem('atletas');
@@ -39,9 +43,13 @@ function carregar() {
             });
             
             let id = localStorage.getItem('atletasId');
-            proximoId = id ? parseInt(id) : 1;
+            if (id) {
+                proximoId = parseInt(id);
+            } else {
+                proximoId = 1;
+            }
             carregado = true;
-            console.log('✓ Atletas carregados do localStorage:', atletas.length);
+            console.log('Atletas carregados:', atletas.length);
         }
     } catch (error) {
         console.error('Erro ao carregar atletas:', error);
@@ -50,7 +58,9 @@ function carregar() {
 
 export function inicializar() {
     carregar();
-    if (atletas.length === 0) carregarExemplos();
+    if (atletas.length === 0) {
+        carregarExemplos();
+    }
     configurarEventos();
     configurarMascaraCPF();
     renderizarTabela(atletas);
@@ -110,7 +120,8 @@ function configurarEventos() {
                     return;
                 }
                 
-                let novoAtleta = new Atleta(proximoId++, nome, cpf, dataNascimento);
+                let novoAtleta = new Atleta(proximoId, nome, cpf, dataNascimento);
+                proximoId = proximoId + 1;
                 atletas.push(novoAtleta);
                 salvar();
                 mostrarMensagem('Atleta cadastrado!');
@@ -132,7 +143,10 @@ function configurarEventos() {
             }
             
             let filtrados = atletas.filter(function(a) {
-                return a.nome.toLowerCase().includes(termo) || a.cpf.includes(termo);
+                let nomeMinusculo = a.nome.toLowerCase();
+                let contemNome = nomeMinusculo.includes(termo);
+                let contemCPF = a.cpf.includes(termo);
+                return contemNome || contemCPF;
             });
             
             renderizarTabela(filtrados);
@@ -143,12 +157,46 @@ function configurarEventos() {
     if (corpoTabelaAtletas) {
         corpoTabelaAtletas.addEventListener('click', function(e) {
             let btn = e.target.closest('button');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
 
             let id = parseInt(btn.dataset.id);
             let action = btn.dataset.action;
             
-            if (action === 'editar') {
+            if (action === 'ver-competicoes') {
+                let atleta = atletas.find(function(a) {
+                    return a.id === id;
+                });
+                
+                if (atleta) {
+                    let inscricoes = competidorController.listarPorAtleta(id);
+                    
+                    let competicoesCompletas = [];
+                    inscricoes.forEach(function(inscricao) {
+                        let comp = competicaoController.buscarPorId(inscricao.idCompeticao);
+                        if (comp) {
+                            let tipoFormatado;
+                            if (comp.constructor.name === 'Maratona') {
+                                tipoFormatado = 'Maratona';
+                            } else {
+                                tipoFormatado = 'Trail Running';
+                            }
+                            
+                            competicoesCompletas.push({
+                                id: comp.id,
+                                nome: comp.nome,
+                                data: comp.data,
+                                local: comp.local,
+                                distancia: comp.distancia,
+                                tipoFormatado: tipoFormatado
+                            });
+                        }
+                    });
+                    
+                    abrirModalCompeticoes(atleta, competicoesCompletas);
+                }
+            } else if (action === 'editar') {
                 let atleta = atletas.find(function(a) {
                     return a.id === id;
                 });
@@ -160,7 +208,8 @@ function configurarEventos() {
                     preencherFormulario(atleta);
                 }
             } else if (action === 'excluir') {
-                if (confirm('Excluir atleta?')) {
+                let confirma = confirm('Deseja realmente excluir este atleta?');
+                if (confirma) {
                     atletas = atletas.filter(function(a) {
                         return a.id !== id;
                     });
@@ -174,16 +223,17 @@ function configurarEventos() {
 }
 
 function carregarExemplos() {
-    let exemplos = [
-        { nome: 'João Silva', cpf: '123.456.789-00', dataNascimento: '1990-05-15' },
-        { nome: 'Maria Santos', cpf: '987.654.321-00', dataNascimento: '1985-08-20' },
-        { nome: 'Pedro Costa', cpf: '456.789.123-00', dataNascimento: '2005-03-10' }
-    ];
+    let exemplo1 = new Atleta(proximoId, 'João Silva', '123.456.789-00', '1990-05-15');
+    proximoId = proximoId + 1;
+    atletas.push(exemplo1);
     
-    exemplos.forEach(function(d) {
-        let novoAtleta = new Atleta(proximoId++, d.nome, d.cpf, d.dataNascimento);
-        atletas.push(novoAtleta);
-    });
+    let exemplo2 = new Atleta(proximoId, 'Maria Santos', '987.654.321-00', '1985-08-20');
+    proximoId = proximoId + 1;
+    atletas.push(exemplo2);
+    
+    let exemplo3 = new Atleta(proximoId, 'Pedro Costa', '456.789.123-00', '2000-03-10');
+    proximoId = proximoId + 1;
+    atletas.push(exemplo3);
     
     salvar();
 }
@@ -197,7 +247,6 @@ export function buscarPorId(id) {
 
 export function listar() {
     carregar();
-    console.log('listar() chamado - retornando', atletas.length, 'atletas');
     return atletas;
 }
 
@@ -208,5 +257,7 @@ export function contarTotal() {
 
 export function carregarDadosExemplo() {
     carregar();
-    if (atletas.length === 0) carregarExemplos();
+    if (atletas.length === 0) {
+        carregarExemplos();
+    }
 }

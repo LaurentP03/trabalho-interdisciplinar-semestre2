@@ -2,9 +2,13 @@ let tbody = document.getElementById('corpoTabelaAtletas');
 let formulario = document.getElementById('formularioAtleta');
 let form = document.getElementById('formAtleta');
 let tituloFormulario = document.getElementById('tituloFormulario');
+let modalCompeticoes = document.getElementById('modalCompeticoes');
+let btnFecharModal = document.getElementById('btnFecharModal');
 
 export function renderizarTabela(atletas) {
-    if (!tbody) return;
+    if (!tbody) {
+        return;
+    }
 
     if (atletas.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5">Nenhum atleta encontrado.</td></tr>';
@@ -19,6 +23,7 @@ export function renderizarTabela(atletas) {
         html = html + '<td>' + a.cpf + '</td>';
         html = html + '<td>' + formatarData(a.dataNascimento) + '</td>';
         html = html + '<td>';
+        html = html + '<button class="btn-ver-competicoes" data-action="ver-competicoes" data-id="' + a.id + '" title="Ver competições inscritas">🏃 Ver</button> ';
         html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + a.id + '">✏️</button>';
         html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + a.id + '">🗑️</button>';
         html = html + '</td>';
@@ -29,7 +34,9 @@ export function renderizarTabela(atletas) {
 }
 
 export function abrirFormulario(modo) {
-    if (!formulario) return;
+    if (!formulario) {
+        return;
+    }
     
     formulario.style.display = 'block';
     
@@ -149,6 +156,71 @@ export function validarDataNascimento(data) {
 export function mostrarMensagem(msg, tipo) {
     alert(msg);
 }
+
+export function abrirModalCompeticoes(atleta, competicoes) {
+    if (!modalCompeticoes) {
+        return;
+    }
+
+    let modalNome = document.getElementById('modalNomeAtleta');
+    let modalCpf = document.getElementById('modalCpfAtleta');
+    let modalTotal = document.getElementById('modalTotalCompeticoes');
+    let listaCompeticoesModal = document.getElementById('listaCompeticoesModal');
+
+    if (modalNome) {
+        modalNome.textContent = atleta.nome;
+    }
+    if (modalCpf) {
+        modalCpf.textContent = atleta.cpf;
+    }
+    if (modalTotal) {
+        modalTotal.textContent = competicoes.length;
+    }
+
+    if (listaCompeticoesModal) {
+        if (competicoes.length === 0) {
+            listaCompeticoesModal.innerHTML = '<div class="competicao-vazio">📭 Nenhuma inscrição ainda</div>';
+        } else {
+            let html = '';
+            competicoes.forEach(function(c) {
+                html = html + '<div class="competicao-item">';
+                html = html + '<div class="competicao-info">';
+                html = html + '<div class="competicao-nome">🏆 ' + c.nome + '</div>';
+                html = html + '<div class="competicao-detalhes">📅 ' + formatarData(c.data) + ' | 📍 ' + c.local + ' | 📏 ' + c.distancia + 'km</div>';
+                html = html + '<span class="competicao-tipo">' + c.tipoFormatado + '</span>';
+                html = html + '</div>';
+                html = html + '</div>';
+            });
+            listaCompeticoesModal.innerHTML = html;
+        }
+    }
+
+    modalCompeticoes.classList.add('ativo');
+}
+
+export function fecharModalCompeticoes() {
+    if (modalCompeticoes) {
+        modalCompeticoes.classList.remove('ativo');
+    }
+}
+
+if (btnFecharModal) {
+    btnFecharModal.addEventListener('click', fecharModalCompeticoes);
+}
+
+if (modalCompeticoes) {
+    modalCompeticoes.addEventListener('click', function(e) {
+        if (e.target === modalCompeticoes) {
+            fecharModalCompeticoes();
+        }
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModalCompeticoes();
+    }
+});
 
 function formatarData(data) {
     let partes = data.split('-');

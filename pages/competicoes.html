@@ -16,7 +16,6 @@
                 <a href="competicoes.html" class="active">Competições</a>
                 <a href="atletas.html">Atletas</a>
                 <a href="inscricoes.html">Inscrições</a>
-                <a href="relatorios.html">Relatórios</a>
             </nav>
         </div>
     </header>
@@ -104,9 +103,33 @@
         </div>
     </main>
 
+    <div id="modalAtletas" class="modal-overlay">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>👥 Atletas Inscritos</h3>
+                <button class="btn-fechar-modal" id="btnFecharModal">&times;</button>
+            </div>
+            
+            <div class="modal-info">
+                <p><strong>Competição:</strong> <span id="modalNomeCompeticao"></span></p>
+                <p><strong>Data:</strong> <span id="modalDataCompeticao"></span></p>
+                <p><strong>Local:</strong> <span id="modalLocalCompeticao"></span></p>
+                <p><strong>Total de Inscritos:</strong> <span id="modalTotalAtletas" class="contador-atletas">0</span></p>
+            </div>
+
+            <div class="lista-atletas-modal">
+                <h4>Lista de Atletas:</h4>
+                <div id="listaAtletasModal">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>© 2024 - Sistema de Competições de Corrida</p>
     </footer>
 
     <script type="module" src="../main.js"></script>
+</body>
 </html>

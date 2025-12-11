@@ -16,31 +16,25 @@ CREATE TABLE Competicoes (
     nome VARCHAR(150) NOT NULL,
     data_evento DATE NOT NULL,
     local_evento VARCHAR(200) NOT NULL,
-    tipo VARCHAR(20) NOT NULL,   -- "MARATONA" ou "TRAIL"
+    tipo VARCHAR(20) NOT NULL,
 
     CONSTRAINT Competicoes_PK PRIMARY KEY (id_competicao)
 ) ENGINE=INNODB;
 
 CREATE TABLE Maratonas (
     id_competicao INT UNSIGNED NOT NULL,
-    tempo_limite_horas INT UNSIGNED DEFAULT 6,
-    percurso VARCHAR(50) DEFAULT 'URBANO',
 
     CONSTRAINT Maratonas_PK PRIMARY KEY (id_competicao),
     CONSTRAINT Maratonas_FK FOREIGN KEY (id_competicao)
         REFERENCES Competicoes (id_competicao)
-        ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE Trail_Running (
     id_competicao INT UNSIGNED NOT NULL,
-    elevacao INT UNSIGNED DEFAULT 0,
-    dificuldade VARCHAR(20) DEFAULT 'MODERADO',
 
     CONSTRAINT Trail_PK PRIMARY KEY (id_competicao),
     CONSTRAINT Trail_FK FOREIGN KEY (id_competicao)
         REFERENCES Competicoes (id_competicao)
-        ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE Inscricoes (
@@ -50,12 +44,10 @@ CREATE TABLE Inscricoes (
     CONSTRAINT Inscricoes_PK PRIMARY KEY (id_atleta, id_competicao),
 
     CONSTRAINT Inscricoes_FK1 FOREIGN KEY (id_atleta)
-        REFERENCES Atletas (id_atleta)
-        ON DELETE CASCADE,
+        REFERENCES Atletas (id_atleta),
 
     CONSTRAINT Inscricoes_FK2 FOREIGN KEY (id_competicao)
         REFERENCES Competicoes (id_competicao)
-        ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 

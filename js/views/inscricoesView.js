@@ -23,16 +23,28 @@ export function renderizarCompeticoes(competicoes) {
         return;
     }
 
-    const html = competicoes.map(c => {
-        const tipo = c instanceof Maratona ? 'Maratona' : 'Trail Running';
-        const data = formatarData(c.data);
-        return `
-            <div class="lista-item" data-id="${c.id}" data-tipo="competicao">
-                <strong>${c.nome}</strong>
-                <span>${tipo} - ${data} - ${c.local}</span>
-            </div>
-        `;
-    }).join('');
+    let html = '';
+    let i = 0;
+    
+    while (i < competicoes.length) {
+        let c = competicoes[i];
+        let tipo = '';
+        
+        if (c instanceof Maratona) {
+            tipo = 'Maratona';
+        } else {
+            tipo = 'Trail Running';
+        }
+        
+        let data = formatarData(c.data);
+        
+        html = html + '<div class="lista-item" data-id="' + c.id + '" data-tipo="competicao">';
+        html = html + '<strong>' + c.nome + '</strong>';
+        html = html + '<span>' + tipo + ' - ' + data + ' - ' + c.local + '</span>';
+        html = html + '</div>';
+        
+        i = i + 1;
+    }
     
     listaCompeticoes.innerHTML = html;
     listaCompeticoes.style.display = 'block';
@@ -53,12 +65,19 @@ export function renderizarAtletas(atletas) {
         return;
     }
 
-    const html = atletas.map(a => `
-        <div class="lista-item" data-id="${a.id}" data-tipo="atleta">
-            <strong>${a.nome}</strong>
-            <span>CPF: ${a.cpf}</span>
-        </div>
-    `).join('');
+    let html = '';
+    let i = 0;
+    
+    while (i < atletas.length) {
+        let a = atletas[i];
+        
+        html = html + '<div class="lista-item" data-id="' + a.id + '" data-tipo="atleta">';
+        html = html + '<strong>' + a.nome + '</strong>';
+        html = html + '<span>CPF: ' + a.cpf + '</span>';
+        html = html + '</div>';
+        
+        i = i + 1;
+    }
     
     listaAtletas.innerHTML = html;
     listaAtletas.style.display = 'block';
@@ -67,10 +86,18 @@ export function renderizarAtletas(atletas) {
 
 export function selecionarCompeticao(comp) {
     competicaoSelecionada = comp;
-    const tipo = comp instanceof Maratona ? 'Maratona' : 'Trail Running';
-    if (inputCompeticao) {
-        inputCompeticao.value = `${comp.nome} - ${tipo}`;
+    
+    let tipo = '';
+    if (comp instanceof Maratona) {
+        tipo = 'Maratona';
+    } else {
+        tipo = 'Trail Running';
     }
+    
+    if (inputCompeticao) {
+        inputCompeticao.value = comp.nome + ' - ' + tipo;
+    }
+    
     if (listaCompeticoes) {
         listaCompeticoes.style.display = 'none';
     }
@@ -78,51 +105,87 @@ export function selecionarCompeticao(comp) {
 
 export function selecionarAtleta(atleta) {
     atletaSelecionado = atleta;
+    
     if (inputAtleta) {
-        inputAtleta.value = `${atleta.nome} - ${atleta.cpf}`;
+        inputAtleta.value = atleta.nome + ' - ' + atleta.cpf;
     }
+    
     if (listaAtletas) {
         listaAtletas.style.display = 'none';
     }
 }
 
 export function obterSelecao() {
+    let idComp = null;
+    let idAtl = null;
+    
+    if (competicaoSelecionada) {
+        idComp = competicaoSelecionada.id;
+    }
+    
+    if (atletaSelecionado) {
+        idAtl = atletaSelecionado.id;
+    }
+    
     return {
-        idCompeticao: competicaoSelecionada?.id || null,
-        idAtleta: atletaSelecionado?.id || null
+        idCompeticao: idComp,
+        idAtleta: idAtl
     };
 }
 
 export function limparSelecao() {
     competicaoSelecionada = null;
     atletaSelecionado = null;
-    if (inputCompeticao) inputCompeticao.value = '';
-    if (inputAtleta) inputAtleta.value = '';
+    
+    if (inputCompeticao) {
+        inputCompeticao.value = '';
+    }
+    
+    if (inputAtleta) {
+        inputAtleta.value = '';
+    }
+    
     esconderListas();
 }
 
 export function esconderListas() {
-    if (listaCompeticoes) listaCompeticoes.style.display = 'none';
-    if (listaAtletas) listaAtletas.style.display = 'none';
+    if (listaCompeticoes) {
+        listaCompeticoes.style.display = 'none';
+    }
+    
+    if (listaAtletas) {
+        listaAtletas.style.display = 'none';
+    }
 }
 
-export function mostrarMensagem(texto, tipo = 'sucesso') {
+export function mostrarMensagem(texto, tipo) {
+    if (!tipo) {
+        tipo = 'sucesso';
+    }
+    
     if (!mensagemEl) {
         alert(texto);
         return;
     }
 
     mensagemEl.textContent = texto;
-    mensagemEl.className = `mensagem ${tipo}`;
+    mensagemEl.className = 'mensagem ' + tipo;
     mensagemEl.style.display = 'block';
 
-    setTimeout(() => {
+    setTimeout(function() {
         mensagemEl.style.display = 'none';
     }, 3000);
 }
 
 function formatarData(data) {
-    if (!data) return '';
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
+    if (!data) {
+        return '';
+    }
+    
+    let partes = data.split('-');
+    let ano = partes[0];
+    let mes = partes[1];
+    let dia = partes[2];
+    
+    return dia + '/' + mes + '/' + ano;
 }

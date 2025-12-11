@@ -4,7 +4,8 @@ import { renderizarRelatorio } from '../views/relatoriosView.js';
 export function inicializar() {
     competicaoController.inicializar();
     
-    setTimeout(() => {
-        renderizarRelatorio(competicaoController.listar());
+    setTimeout(function() {
+        let competicoes = competicaoController.listar();
+        renderizarRelatorio(competicoes);
     }, 100);
 }

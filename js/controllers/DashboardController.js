@@ -6,19 +6,26 @@ export function inicializar() {
     competicaoController.inicializar();
     atletaController.inicializar();
     
-    setTimeout(() => {
-        const totalCompeticoes = competicaoController.contarTotal();
-        const totalAtletas = atletaController.contarTotal();
+    setTimeout(function() {
+        let totalCompeticoes = competicaoController.contarTotal();
+        let totalAtletas = atletaController.contarTotal();
         
         let totalInscricoes = 0;
-        competicaoController.listar().forEach(comp => {
-            totalInscricoes += comp.atletas.length;
-        });
+        let competicoes = competicaoController.listar();
+        let i = 0;
+        
+        while (i < competicoes.length) {
+            let comp = competicoes[i];
+            totalInscricoes = totalInscricoes + comp.atletas.length;
+            i = i + 1;
+        }
 
-        renderizarEstatisticas({
-            totalCompeticoes,
-            totalAtletas,
-            totalInscricoes
-        });
+        let dados = {
+            totalCompeticoes: totalCompeticoes,
+            totalAtletas: totalAtletas,
+            totalInscricoes: totalInscricoes
+        };
+        
+        renderizarEstatisticas(dados);
     }, 100);
 }

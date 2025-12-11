@@ -4,57 +4,125 @@ const form = document.getElementById('formAtleta');
 const tituloFormulario = document.getElementById('tituloFormulario');
 
 export function renderizarTabela(atletas) {
-    if (!tbody) return;
+    if (!tbody) {
+        return;
+    }
 
     if (atletas.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5">Nenhum atleta encontrado.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = atletas.map(a => `
-        <tr>
-            <td>${a.id}</td>
-            <td>${a.nome}</td>
-            <td>${a.cpf}</td>
-            <td>${formatarData(a.dataNascimento)}</td>
-            <td>
-                <button class="btn-acao btn-editar" data-action="editar" data-id="${a.id}">✏️</button>
-                <button class="btn-acao btn-excluir" data-action="excluir" data-id="${a.id}">🗑️</button>
-            </td>
-        </tr>
-    `).join('');
+    let html = '';
+    let i = 0;
+    
+    while (i < atletas.length) {
+        let a = atletas[i];
+        let dataFormatada = formatarData(a.dataNascimento);
+        
+        html = html + '<tr>';
+        html = html + '<td>' + a.id + '</td>';
+        html = html + '<td>' + a.nome + '</td>';
+        html = html + '<td>' + a.cpf + '</td>';
+        html = html + '<td>' + dataFormatada + '</td>';
+        html = html + '<td>';
+        html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + a.id + '">✏️</button>';
+        html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + a.id + '">🗑️</button>';
+        html = html + '</td>';
+        html = html + '</tr>';
+        
+        i = i + 1;
+    }
+    
+    tbody.innerHTML = html;
 }
 
 export function abrirFormulario(modo) {
-    if (!formulario) return;
+    if (!formulario) {
+        return;
+    }
+    
     formulario.style.display = 'block';
-    tituloFormulario.textContent = modo === 'editar' ? 'Editar Atleta' : 'Cadastrar Novo Atleta';
+    
+    if (modo === 'editar') {
+        tituloFormulario.textContent = 'Editar Atleta';
+    } else {
+        tituloFormulario.textContent = 'Cadastrar Novo Atleta';
+    }
+    
     if (modo === 'criar') {
-        form?.reset();
-        document.getElementById('cpf').disabled = false;
+        if (form) {
+            form.reset();
+        }
+        
+        let cpfInput = document.getElementById('cpf');
+        if (cpfInput) {
+            cpfInput.disabled = false;
+        }
     }
 }
 
 export function fecharFormulario() {
-    if (formulario) formulario.style.display = 'none';
-    form?.reset();
+    if (formulario) {
+        formulario.style.display = 'none';
+    }
+    
+    if (form) {
+        form.reset();
+    }
 }
 
 export function preencherFormulario(atleta) {
-    document.getElementById('atletaId').value = atleta.id;
-    document.getElementById('nome').value = atleta.nome;
-    document.getElementById('cpf').value = atleta.cpf;
-    document.getElementById('cpf').disabled = true;
-    document.getElementById('dataNascimento').value = atleta.dataNascimento;
-    document.getElementById('btnSalvar').textContent = 'Atualizar';
+    let idInput = document.getElementById('atletaId');
+    if (idInput) {
+        idInput.value = atleta.id;
+    }
+    
+    let nomeInput = document.getElementById('nome');
+    if (nomeInput) {
+        nomeInput.value = atleta.nome;
+    }
+    
+    let cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        cpfInput.value = atleta.cpf;
+        cpfInput.disabled = true;
+    }
+    
+    let dataInput = document.getElementById('dataNascimento');
+    if (dataInput) {
+        dataInput.value = atleta.dataNascimento;
+    }
+    
+    let btnSalvar = document.getElementById('btnSalvar');
+    if (btnSalvar) {
+        btnSalvar.textContent = 'Atualizar';
+    }
 }
 
 export function obterDadosFormulario() {
-    return {
-        nome: document.getElementById('nome').value,
-        cpf: document.getElementById('cpf').value,
-        dataNascimento: document.getElementById('dataNascimento').value
+    let dados = {
+        nome: '',
+        cpf: '',
+        dataNascimento: ''
     };
+    
+    let nomeInput = document.getElementById('nome');
+    if (nomeInput) {
+        dados.nome = nomeInput.value;
+    }
+    
+    let cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        dados.cpf = cpfInput.value;
+    }
+    
+    let dataInput = document.getElementById('dataNascimento');
+    if (dataInput) {
+        dados.dataNascimento = dataInput.value;
+    }
+    
+    return dados;
 }
 
 export function mostrarMensagem(msg) {
@@ -62,15 +130,22 @@ export function mostrarMensagem(msg) {
 }
 
 function formatarData(data) {
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
+    let partes = data.split('-');
+    let ano = partes[0];
+    let mes = partes[1];
+    let dia = partes[2];
+    
+    return dia + '/' + mes + '/' + ano;
 }
 
 export function configurarMascaraCPF() {
-    const cpfInput = document.getElementById('cpf');
+    let cpfInput = document.getElementById('cpf');
+    
     if (cpfInput) {
-        cpfInput.addEventListener('input', (e) => {
-            let valor = e.target.value.replace(/\D/g, '');
+        cpfInput.addEventListener('input', function(e) {
+            let valor = e.target.value;
+            valor = valor.replace(/\D/g, '');
+            
             if (valor.length <= 11) {
                 valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
                 valor = valor.replace(/(\d{3})(\d)/, '$1.$2');

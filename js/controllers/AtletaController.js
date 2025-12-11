@@ -1,263 +1,164 @@
-import { Atleta } from '../models/Atleta.js';
-import { renderizarTabela, abrirFormulario, fecharFormulario, preencherFormulario, obterDadosFormulario, mostrarMensagem, configurarMascaraCPF, validarDataNascimento, abrirModalCompeticoes } from '../views/atletasView.js';
-import * as competidorController from './CompetidorController.js';
-import * as competicaoController from './CompeticaoController.js';
+// js/controllers/AtletaController.js (REFATORADO)
+import { AtletaRepository } from '../repositories/AtletaRepository.js';
+import { CompeticaoRepository } from '../repositories/CompeticaoRepository.js';
+import { InscricaoRepository } from '../repositories/InscricaoRepository.js';
+import {
+    renderizarTabela,
+    abrirFormulario,
+    fecharFormulario,
+    preencherFormulario,
+    obterDadosFormulario,
+    mostrarMensagem,
+    configurarMascaraCPF,
+    validarDataNascimento,
+    abrirModalCompeticoes
+} from '../views/atletasView.js';
 
-let atletas = [];
-let proximoId = 1;
 let modoEdicao = false;
 let idEmEdicao = null;
-let carregado = false;
-
-function salvar() {
-    try {
-        let atletasParaSalvar = atletas.map(function(a) {
-            return {
-                id: a.id,
-                nome: a.nome,
-                cpf: a.cpf,
-                dataNascimento: a.dataNascimento
-            };
-        });
-        
-        let dados = JSON.stringify(atletasParaSalvar);
-        localStorage.setItem('atletas', dados);
-        localStorage.setItem('atletasId', proximoId.toString());
-    } catch (error) {
-        console.error('Erro ao salvar atletas:', error);
-    }
-}
-
-function carregar() {
-    if (carregado) {
-        return;
-    }
-    
-    try {
-        let dados = localStorage.getItem('atletas');
-        if (dados) {
-            let atletasCarregados = JSON.parse(dados);
-            
-            atletas = atletasCarregados.map(function(a) {
-                return new Atleta(a.id, a.nome, a.cpf, a.dataNascimento);
-            });
-            
-            let id = localStorage.getItem('atletasId');
-            if (id) {
-                proximoId = parseInt(id);
-            } else {
-                proximoId = 1;
-            }
-            carregado = true;
-            console.log('Atletas carregados:', atletas.length);
-        }
-    } catch (error) {
-        console.error('Erro ao carregar atletas:', error);
-    }
-}
 
 export function inicializar() {
-    carregar();
-    if (atletas.length === 0) {
-        carregarExemplos();
-    }
+    AtletaRepository.carregar();
+    AtletaRepository.carregarExemplos();
+    
     configurarEventos();
     configurarMascaraCPF();
-    renderizarTabela(atletas);
+    renderizarTabela(AtletaRepository.listar());
 }
 
 function configurarEventos() {
-    let btnNovoAtleta = document.getElementById('btnNovoAtleta');
+    const btnNovoAtleta = document.getElementById('btnNovoAtleta');
     if (btnNovoAtleta) {
-        btnNovoAtleta.addEventListener('click', function() {
+        btnNovoAtleta.addEventListener('click', () => {
             modoEdicao = false;
             idEmEdicao = null;
             abrirFormulario('criar');
         });
     }
 
-    let btnCancelar = document.getElementById('btnCancelar');
+    const btnCancelar = document.getElementById('btnCancelar');
     if (btnCancelar) {
-        btnCancelar.addEventListener('click', function() {
+        btnCancelar.addEventListener('click', () => {
             fecharFormulario();
         });
     }
 
-    let formAtleta = document.getElementById('formAtleta');
+    const formAtleta = document.getElementById('formAtleta');
     if (formAtleta) {
-        formAtleta.addEventListener('submit', function(e) {
+        formAtleta.addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            let dados = obterDadosFormulario();
-            let nome = dados.nome;
-            let cpf = dados.cpf;
-            let dataNascimento = dados.dataNascimento;
-
-            let validacao = validarDataNascimento(dataNascimento);
-            if (!validacao.valido) {
-                mostrarMensagem(validacao.mensagem, 'erro');
-                return;
-            }
-
-            if (modoEdicao) {
-                let atleta = atletas.find(function(a) {
-                    return a.id === idEmEdicao;
-                });
-                
-                if (atleta) {
-                    atleta.nome = nome;
-                    atleta.dataNascimento = dataNascimento;
-                    salvar();
-                    mostrarMensagem('Atleta atualizado!');
-                }
-            } else {
-                let atletaExistente = atletas.find(function(a) {
-                    return a.cpf === cpf;
-                });
-                
-                if (atletaExistente) {
-                    mostrarMensagem('CPF já cadastrado!', 'erro');
-                    return;
-                }
-                
-                let novoAtleta = new Atleta(proximoId, nome, cpf, dataNascimento);
-                proximoId = proximoId + 1;
-                atletas.push(novoAtleta);
-                salvar();
-                mostrarMensagem('Atleta cadastrado!');
-            }
-            
-            fecharFormulario();
-            renderizarTabela(atletas);
+            handleSubmit();
         });
     }
 
-    let campoBusca = document.getElementById('campoBusca');
+    const campoBusca = document.getElementById('campoBusca');
     if (campoBusca) {
-        campoBusca.addEventListener('input', function(e) {
-            let termo = e.target.value.toLowerCase().trim();
-            
-            if (!termo) {
-                renderizarTabela(atletas);
-                return;
-            }
-            
-            let filtrados = atletas.filter(function(a) {
-                let nomeMinusculo = a.nome.toLowerCase();
-                let contemNome = nomeMinusculo.includes(termo);
-                let contemCPF = a.cpf.includes(termo);
-                return contemNome || contemCPF;
-            });
-            
+        campoBusca.addEventListener('input', (e) => {
+            const termo = e.target.value;
+            const filtrados = AtletaRepository.filtrar(termo);
             renderizarTabela(filtrados);
         });
     }
 
-    let corpoTabelaAtletas = document.getElementById('corpoTabelaAtletas');
-    if (corpoTabelaAtletas) {
-        corpoTabelaAtletas.addEventListener('click', function(e) {
-            let btn = e.target.closest('button');
-            if (!btn) {
-                return;
-            }
+    const corpoTabela = document.getElementById('corpoTabelaAtletas');
+    if (corpoTabela) {
+        corpoTabela.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
 
-            let id = parseInt(btn.dataset.id);
-            let action = btn.dataset.action;
-            
+            const id = parseInt(btn.dataset.id);
+            const action = btn.dataset.action;
+
             if (action === 'ver-competicoes') {
-                let atleta = atletas.find(function(a) {
-                    return a.id === id;
-                });
-                
-                if (atleta) {
-                    let inscricoes = competidorController.listarPorAtleta(id);
-                    
-                    let competicoesCompletas = [];
-                    inscricoes.forEach(function(inscricao) {
-                        let comp = competicaoController.buscarPorId(inscricao.idCompeticao);
-                        if (comp) {
-                            let tipoFormatado;
-                            if (comp.constructor.name === 'Maratona') {
-                                tipoFormatado = 'Maratona';
-                            } else {
-                                tipoFormatado = 'Trail Running';
-                            }
-                            
-                            competicoesCompletas.push({
-                                id: comp.id,
-                                nome: comp.nome,
-                                data: comp.data,
-                                local: comp.local,
-                                distancia: comp.distancia,
-                                tipoFormatado: tipoFormatado
-                            });
-                        }
-                    });
-                    
-                    abrirModalCompeticoes(atleta, competicoesCompletas);
-                }
+                handleVerCompeticoes(id);
             } else if (action === 'editar') {
-                let atleta = atletas.find(function(a) {
-                    return a.id === id;
-                });
-                
-                if (atleta) {
-                    modoEdicao = true;
-                    idEmEdicao = id;
-                    abrirFormulario('editar');
-                    preencherFormulario(atleta);
-                }
+                handleEditar(id);
             } else if (action === 'excluir') {
-                let confirma = confirm('Deseja realmente excluir este atleta?');
-                if (confirma) {
-                    atletas = atletas.filter(function(a) {
-                        return a.id !== id;
-                    });
-                    salvar();
-                    mostrarMensagem('Atleta excluído!');
-                    renderizarTabela(atletas);
-                }
+                handleExcluir(id);
             }
         });
     }
 }
 
-function carregarExemplos() {
-    let exemplo1 = new Atleta(proximoId, 'João Silva', '123.456.789-00', '1990-05-15');
-    proximoId = proximoId + 1;
-    atletas.push(exemplo1);
+function handleSubmit() {
+    const dados = obterDadosFormulario();
+    const { nome, cpf, dataNascimento } = dados;
+
+    // Validar data
+    const validacao = validarDataNascimento(dataNascimento);
+    if (!validacao.valido) {
+        mostrarMensagem(validacao.mensagem, 'erro');
+        return;
+    }
+
+    let resultado;
     
-    let exemplo2 = new Atleta(proximoId, 'Maria Santos', '987.654.321-00', '1985-08-20');
-    proximoId = proximoId + 1;
-    atletas.push(exemplo2);
+    if (modoEdicao) {
+        resultado = AtletaRepository.atualizar(idEmEdicao, nome, dataNascimento);
+        if (resultado.sucesso) {
+            mostrarMensagem('Atleta atualizado!');
+        }
+    } else {
+        resultado = AtletaRepository.criar(nome, cpf, dataNascimento);
+        if (resultado.sucesso) {
+            mostrarMensagem('Atleta cadastrado!');
+        }
+    }
+
+    if (!resultado.sucesso) {
+        mostrarMensagem(resultado.mensagem, 'erro');
+        return;
+    }
+
+    fecharFormulario();
+    renderizarTabela(AtletaRepository.listar());
+}
+
+function handleVerCompeticoes(idAtleta) {
+    const atleta = AtletaRepository.buscarPorId(idAtleta);
+    if (!atleta) return;
+
+    // Buscar inscrições do atleta
+    const inscricoes = InscricaoRepository.listarPorAtleta(idAtleta);
     
-    let exemplo3 = new Atleta(proximoId, 'Pedro Costa', '456.789.123-00', '2000-03-10');
-    proximoId = proximoId + 1;
-    atletas.push(exemplo3);
+    // Buscar dados completos das competições
+    const competicoesCompletas = inscricoes
+        .map(inscricao => {
+            const comp = CompeticaoRepository.buscarPorId(inscricao.idCompeticao);
+            if (!comp) return null;
+            
+            return {
+                id: comp.id,
+                nome: comp.nome,
+                data: comp.data,
+                local: comp.local,
+                distancia: comp.distancia,
+                tipoFormatado: comp.constructor.name === 'Maratona' ? 'Maratona' : 'Trail Running'
+            };
+        })
+        .filter(c => c !== null);
+
+    abrirModalCompeticoes(atleta, competicoesCompletas);
+}
+
+function handleEditar(idAtleta) {
+    const atleta = AtletaRepository.buscarPorId(idAtleta);
+    if (!atleta) return;
+
+    modoEdicao = true;
+    idEmEdicao = idAtleta;
+    abrirFormulario('editar');
+    preencherFormulario(atleta);
+}
+
+function handleExcluir(idAtleta) {
+    const confirma = confirm('Deseja realmente excluir este atleta?');
+    if (!confirma) return;
+
+    const resultado = AtletaRepository.excluir(idAtleta);
     
-    salvar();
-}
-
-export function buscarPorId(id) {
-    carregar();
-    return atletas.find(function(a) {
-        return a.id === id;
-    });
-}
-
-export function listar() {
-    carregar();
-    return atletas;
-}
-
-export function contarTotal() {
-    carregar();
-    return atletas.length;
-}
-
-export function carregarDadosExemplo() {
-    carregar();
-    if (atletas.length === 0) {
-        carregarExemplos();
+    if (resultado.sucesso) {
+        mostrarMensagem('Atleta excluído!');
+        renderizarTabela(AtletaRepository.listar());
     }
 }

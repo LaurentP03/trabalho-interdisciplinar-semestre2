@@ -1,22 +1,28 @@
-import * as competicaoController from './CompeticaoController.js';
-import * as atletaController from './AtletaController.js';
-import * as competidorController from './CompetidorController.js';
+// js/controllers/DashboardController.js (REFATORADO)
+import { CompeticaoRepository } from '../repositories/CompeticaoRepository.js';
+import { AtletaRepository } from '../repositories/AtletaRepository.js';
+import { InscricaoRepository } from '../repositories/InscricaoRepository.js';
 import { renderizarEstatisticas } from '../views/dashboardView.js';
 
 export function inicializar() {
-    competicaoController.inicializar();
-    atletaController.inicializar();
-    competidorController.inicializar();
+    // Garantir que todos os dados estão carregados
+    CompeticaoRepository.carregar();
+    CompeticaoRepository.carregarExemplos();
     
-    setTimeout(function() {
-        let totalCompeticoes = competicaoController.contarTotal();
-        let totalAtletas = atletaController.contarTotal();
-        let totalInscricoes = competidorController.contarInscricoes();
+    AtletaRepository.carregar();
+    AtletaRepository.carregarExemplos();
+    
+    InscricaoRepository.carregar();
+
+    setTimeout(() => {
+        const totalCompeticoes = CompeticaoRepository.contarTotal();
+        const totalAtletas = AtletaRepository.contarTotal();
+        const totalInscricoes = InscricaoRepository.contarTotal();
 
         renderizarEstatisticas({
-            totalCompeticoes: totalCompeticoes,
-            totalAtletas: totalAtletas,
-            totalInscricoes: totalInscricoes
+            totalCompeticoes,
+            totalAtletas,
+            totalInscricoes
         });
     }, 100);
 }

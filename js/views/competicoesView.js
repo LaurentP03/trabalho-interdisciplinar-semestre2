@@ -1,9 +1,9 @@
-import { Maratona } from '../models/Maratona.js';
-
-const tbody = document.getElementById('corpoTabelaCompeticoes');
-const formulario = document.getElementById('formularioCompeticao');
-const form = document.getElementById('formCompeticao');
-const tituloFormulario = document.getElementById('tituloFormulario');
+let tbody = document.getElementById('corpoTabelaCompeticoes');
+let formulario = document.getElementById('formularioCompeticao');
+let form = document.getElementById('formCompeticao');
+let tituloFormulario = document.getElementById('tituloFormulario');
+let modalAtletas = document.getElementById('modalAtletas');
+let btnFecharModal = document.getElementById('btnFecharModal');
 
 export function renderizarTabela(competicoes) {
     if (!tbody) {
@@ -16,43 +16,28 @@ export function renderizarTabela(competicoes) {
     }
 
     let html = '';
-    let i = 0;
-    
-    while (i < competicoes.length) {
-        let c = competicoes[i];
-        let dataFormatada = formatarData(c.data);
-        let tipo = '';
-        
-        if (c instanceof Maratona) {
-            tipo = '🏃 Maratona';
-        } else {
-            tipo = '⛰️ Trail Running';
-        }
-        
+    competicoes.forEach(function(c) {
         html = html + '<tr>';
         html = html + '<td>' + c.id + '</td>';
         html = html + '<td>' + c.nome + '</td>';
-        html = html + '<td>' + dataFormatada + '</td>';
+        html = html + '<td>' + formatarData(c.data) + '</td>';
         html = html + '<td>' + c.local + '</td>';
         html = html + '<td>' + c.distancia + 'km</td>';
-        html = html + '<td>' + tipo + '</td>';
+        html = html + '<td>' + c.tipoFormatado + '</td>';
         html = html + '<td>' + c.atletas.length + '</td>';
         html = html + '<td>';
+        html = html + '<button class="btn-ver-atletas" data-action="ver-atletas" data-id="' + c.id + '" title="Ver atletas inscritos">👥 Ver</button> ';
         html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + c.id + '">✏️</button>';
         html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + c.id + '">🗑️</button>';
         html = html + '</td>';
         html = html + '</tr>';
-        
-        i = i + 1;
-    }
+    });
     
     tbody.innerHTML = html;
 }
 
 export function abrirFormulario(modo) {
-    if (!formulario) {
-        return;
-    }
+    if (!formulario) return;
     
     formulario.style.display = 'block';
     
@@ -73,51 +58,52 @@ export function fecharFormulario() {
     if (formulario) {
         formulario.style.display = 'none';
     }
-    
     if (form) {
         form.reset();
     }
 }
 
 export function preencherFormulario(comp, tipo) {
-    let idInput = document.getElementById('competicaoId');
-    if (idInput) {
-        idInput.value = comp.id;
-    }
+    let competicaoIdElement = document.getElementById('competicaoId');
+    let nomeElement = document.getElementById('nome');
+    let dataElement = document.getElementById('data');
+    let localElement = document.getElementById('local');
+    let distanciaElement = document.getElementById('distancia');
+    let tipoElement = document.querySelector('input[value="' + tipo + '"]');
     
-    let nomeInput = document.getElementById('nome');
-    if (nomeInput) {
-        nomeInput.value = comp.nome;
+    if (competicaoIdElement) {
+        competicaoIdElement.value = comp.id;
     }
-    
-    let dataInput = document.getElementById('data');
-    if (dataInput) {
-        dataInput.value = comp.data;
+    if (nomeElement) {
+        nomeElement.value = comp.nome;
     }
-    
-    let localInput = document.getElementById('local');
-    if (localInput) {
-        localInput.value = comp.local;
+    if (dataElement) {
+        dataElement.value = comp.data;
     }
-    
-    let distanciaInput = document.getElementById('distancia');
-    if (distanciaInput) {
-        distanciaInput.value = comp.distancia;
+    if (localElement) {
+        localElement.value = comp.local;
     }
-    
-    let radioInput = document.querySelector('input[value="' + tipo + '"]');
-    if (radioInput) {
-        radioInput.checked = true;
+    if (distanciaElement) {
+        distanciaElement.value = comp.distancia;
+    }
+    if (tipoElement) {
+        tipoElement.checked = true;
     }
 }
 
 export function obterDadosFormulario() {
-    let dados = {
-        nome: '',
-        data: '',
-        local: '',
-        distancia: 0,
-        tipo: ''
+    let nomeElement = document.getElementById('nome');
+    let dataElement = document.getElementById('data');
+    let localElement = document.getElementById('local');
+    let distanciaElement = document.getElementById('distancia');
+    let tipoElement = document.querySelector('input[name="tipo"]:checked');
+    
+    return {
+        nome: nomeElement ? nomeElement.value : '',
+        data: dataElement ? dataElement.value : '',
+        local: localElement ? localElement.value : '',
+        distancia: distanciaElement ? parseFloat(distanciaElement.value) : 0,
+        tipo: tipoElement ? tipoElement.value : ''
     };
     
     let nomeInput = document.getElementById('nome');
@@ -148,15 +134,128 @@ export function obterDadosFormulario() {
     return dados;
 }
 
-export function mostrarMensagem(msg) {
+export function validarDataCompeticao(data) {
+    if (!data) {
+        return { valido: false, mensagem: 'Data da competição é obrigatória!' };
+    }
+
+    let partes = data.split('-');
+    let ano = parseInt(partes[0]);
+    let mes = parseInt(partes[1]);
+    let dia = parseInt(partes[2]);
+
+    let hoje = new Date();
+    let anoAtual = hoje.getFullYear();
+    let mesAtual = hoje.getMonth() + 1;
+    let diaAtual = hoje.getDate();
+
+    if (ano < anoAtual) {
+        return { valido: false, mensagem: 'O ano da competição não pode ser no passado!' };
+    }
+
+    if (ano == anoAtual && mes < mesAtual) {
+        return { valido: false, mensagem: 'A data da competição não pode ser no passado!' };
+    }
+
+    if (ano == anoAtual && mes == mesAtual && dia < diaAtual) {
+        return { valido: false, mensagem: 'A data da competição não pode ser no passado!' };
+    }
+
+    if (ano > 2050) {
+        return { valido: false, mensagem: 'O ano deve ser até 2050!' };
+    }
+
+    if (mes < 1 || mes > 12) {
+        return { valido: false, mensagem: 'Mês inválido!' };
+    }
+
+    if (dia < 1 || dia > 31) {
+        return { valido: false, mensagem: 'Dia inválido!' };
+    }
+
+    if (mes == 2) {
+        let bissexto = (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
+        if (bissexto && dia > 29) {
+            return { valido: false, mensagem: 'Fevereiro só tem 29 dias em ano bissexto!' };
+        }
+        if (!bissexto && dia > 28) {
+            return { valido: false, mensagem: 'Fevereiro só tem 28 dias!' };
+        }
+    }
+
+    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
+        return { valido: false, mensagem: 'Este mês só tem 30 dias!' };
+    }
+
+    return { valido: true };
+}
+
+export function mostrarMensagem(msg, tipo) {
     alert(msg);
 }
+
+export function abrirModalAtletas(competicao, atletas) {
+    if (!modalAtletas) return;
+
+    let modalNome = document.getElementById('modalNomeCompeticao');
+    let modalData = document.getElementById('modalDataCompeticao');
+    let modalLocal = document.getElementById('modalLocalCompeticao');
+    let modalTotal = document.getElementById('modalTotalAtletas');
+    let listaAtletasModal = document.getElementById('listaAtletasModal');
+
+    if (modalNome) modalNome.textContent = competicao.nome;
+    if (modalData) modalData.textContent = formatarData(competicao.data);
+    if (modalLocal) modalLocal.textContent = competicao.local;
+    if (modalTotal) modalTotal.textContent = atletas.length;
+
+    if (listaAtletasModal) {
+        if (atletas.length === 0) {
+            listaAtletasModal.innerHTML = '<div class="atleta-vazio">📭 Nenhum atleta inscrito ainda</div>';
+        } else {
+            let html = '';
+            atletas.forEach(function(a) {
+                html = html + '<div class="atleta-item">';
+                html = html + '<div class="atleta-info">';
+                html = html + '<div class="atleta-nome">🏃 ' + a.nome + '</div>';
+                html = html + '<div class="atleta-cpf">CPF: ' + a.cpf + '</div>';
+                html = html + '</div>';
+                html = html + '</div>';
+            });
+            listaAtletasModal.innerHTML = html;
+        }
+    }
+
+    modalAtletas.classList.add('ativo');
+}
+
+export function fecharModalAtletas() {
+    if (modalAtletas) {
+        modalAtletas.classList.remove('ativo');
+    }
+}
+
+if (btnFecharModal) {
+    btnFecharModal.addEventListener('click', fecharModalAtletas);
+}
+
+if (modalAtletas) {
+    modalAtletas.addEventListener('click', function(e) {
+        if (e.target === modalAtletas) {
+            fecharModalAtletas();
+        }
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModalAtletas();
+    }
+});
 
 function formatarData(data) {
     let partes = data.split('-');
     let ano = partes[0];
     let mes = partes[1];
     let dia = partes[2];
-    
     return dia + '/' + mes + '/' + ano;
 }

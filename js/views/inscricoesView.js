@@ -1,10 +1,8 @@
-import { Maratona } from '../models/Maratona.js';
-
-const inputCompeticao = document.getElementById('buscaCompeticao');
-const inputAtleta = document.getElementById('buscaAtleta');
-const listaCompeticoes = document.getElementById('listaCompeticoes');
-const listaAtletas = document.getElementById('listaAtletas');
-const mensagemEl = document.getElementById('mensagemInscricao');
+let inputCompeticao = document.getElementById('buscaCompeticao');
+let inputAtleta = document.getElementById('buscaAtleta');
+let listaCompeticoes = document.getElementById('listaCompeticoes');
+let listaAtletas = document.getElementById('listaAtletas');
+let mensagemEl = document.getElementById('mensagemInscricao');
 
 let competicaoSelecionada = null;
 let atletaSelecionado = null;
@@ -24,27 +22,13 @@ export function renderizarCompeticoes(competicoes) {
     }
 
     let html = '';
-    let i = 0;
-    
-    while (i < competicoes.length) {
-        let c = competicoes[i];
-        let tipo = '';
-        
-        if (c instanceof Maratona) {
-            tipo = 'Maratona';
-        } else {
-            tipo = 'Trail Running';
-        }
-        
+    competicoes.forEach(function(c) {
         let data = formatarData(c.data);
-        
         html = html + '<div class="lista-item" data-id="' + c.id + '" data-tipo="competicao">';
         html = html + '<strong>' + c.nome + '</strong>';
-        html = html + '<span>' + tipo + ' - ' + data + ' - ' + c.local + '</span>';
+        html = html + '<span>' + c.tipoFormatado + ' - ' + data + ' - ' + c.local + '</span>';
         html = html + '</div>';
-        
-        i = i + 1;
-    }
+    });
     
     listaCompeticoes.innerHTML = html;
     listaCompeticoes.style.display = 'block';
@@ -66,18 +50,12 @@ export function renderizarAtletas(atletas) {
     }
 
     let html = '';
-    let i = 0;
-    
-    while (i < atletas.length) {
-        let a = atletas[i];
-        
+    atletas.forEach(function(a) {
         html = html + '<div class="lista-item" data-id="' + a.id + '" data-tipo="atleta">';
         html = html + '<strong>' + a.nome + '</strong>';
         html = html + '<span>CPF: ' + a.cpf + '</span>';
         html = html + '</div>';
-        
-        i = i + 1;
-    }
+    });
     
     listaAtletas.innerHTML = html;
     listaAtletas.style.display = 'block';
@@ -86,12 +64,8 @@ export function renderizarAtletas(atletas) {
 
 export function selecionarCompeticao(comp) {
     competicaoSelecionada = comp;
-    
-    let tipo = '';
-    if (comp instanceof Maratona) {
-        tipo = 'Maratona';
-    } else {
-        tipo = 'Trail Running';
+    if (inputCompeticao) {
+        inputCompeticao.value = comp.nome + ' - ' + comp.tipoFormatado;
     }
     
     if (inputCompeticao) {
@@ -116,35 +90,24 @@ export function selecionarAtleta(atleta) {
 }
 
 export function obterSelecao() {
-    let idComp = null;
-    let idAtl = null;
-    
-    if (competicaoSelecionada) {
-        idComp = competicaoSelecionada.id;
-    }
-    
-    if (atletaSelecionado) {
-        idAtl = atletaSelecionado.id;
-    }
+    let idCompeticao = competicaoSelecionada ? competicaoSelecionada.id : null;
+    let idAtleta = atletaSelecionado ? atletaSelecionado.id : null;
     
     return {
-        idCompeticao: idComp,
-        idAtleta: idAtl
+        idCompeticao: idCompeticao,
+        idAtleta: idAtleta
     };
 }
 
 export function limparSelecao() {
     competicaoSelecionada = null;
     atletaSelecionado = null;
-    
     if (inputCompeticao) {
         inputCompeticao.value = '';
     }
-    
     if (inputAtleta) {
         inputAtleta.value = '';
     }
-    
     esconderListas();
 }
 
@@ -152,17 +115,12 @@ export function esconderListas() {
     if (listaCompeticoes) {
         listaCompeticoes.style.display = 'none';
     }
-    
     if (listaAtletas) {
         listaAtletas.style.display = 'none';
     }
 }
 
 export function mostrarMensagem(texto, tipo) {
-    if (!tipo) {
-        tipo = 'sucesso';
-    }
-    
     if (!mensagemEl) {
         alert(texto);
         return;
@@ -178,14 +136,10 @@ export function mostrarMensagem(texto, tipo) {
 }
 
 function formatarData(data) {
-    if (!data) {
-        return '';
-    }
-    
+    if (!data) return '';
     let partes = data.split('-');
     let ano = partes[0];
     let mes = partes[1];
     let dia = partes[2];
-    
     return dia + '/' + mes + '/' + ano;
 }

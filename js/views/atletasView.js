@@ -1,7 +1,9 @@
-const tbody = document.getElementById('corpoTabelaAtletas');
-const formulario = document.getElementById('formularioAtleta');
-const form = document.getElementById('formAtleta');
-const tituloFormulario = document.getElementById('tituloFormulario');
+let tbody = document.getElementById('corpoTabelaAtletas');
+let formulario = document.getElementById('formularioAtleta');
+let form = document.getElementById('formAtleta');
+let tituloFormulario = document.getElementById('tituloFormulario');
+let modalCompeticoes = document.getElementById('modalCompeticoes');
+let btnFecharModal = document.getElementById('btnFecharModal');
 
 export function renderizarTabela(atletas) {
     if (!tbody) {
@@ -14,25 +16,19 @@ export function renderizarTabela(atletas) {
     }
 
     let html = '';
-    let i = 0;
-    
-    while (i < atletas.length) {
-        let a = atletas[i];
-        let dataFormatada = formatarData(a.dataNascimento);
-        
+    atletas.forEach(function(a) {
         html = html + '<tr>';
         html = html + '<td>' + a.id + '</td>';
         html = html + '<td>' + a.nome + '</td>';
         html = html + '<td>' + a.cpf + '</td>';
-        html = html + '<td>' + dataFormatada + '</td>';
+        html = html + '<td>' + formatarData(a.dataNascimento) + '</td>';
         html = html + '<td>';
+        html = html + '<button class="btn-ver-competicoes" data-action="ver-competicoes" data-id="' + a.id + '" title="Ver competições inscritas">🏃 Ver</button> ';
         html = html + '<button class="btn-acao btn-editar" data-action="editar" data-id="' + a.id + '">✏️</button>';
         html = html + '<button class="btn-acao btn-excluir" data-action="excluir" data-id="' + a.id + '">🗑️</button>';
         html = html + '</td>';
         html = html + '</tr>';
-        
-        i = i + 1;
-    }
+    });
     
     tbody.innerHTML = html;
 }
@@ -54,10 +50,9 @@ export function abrirFormulario(modo) {
         if (form) {
             form.reset();
         }
-        
-        let cpfInput = document.getElementById('cpf');
-        if (cpfInput) {
-            cpfInput.disabled = false;
+        let cpfElement = document.getElementById('cpf');
+        if (cpfElement) {
+            cpfElement.disabled = false;
         }
     }
 }
@@ -66,45 +61,45 @@ export function fecharFormulario() {
     if (formulario) {
         formulario.style.display = 'none';
     }
-    
     if (form) {
         form.reset();
     }
 }
 
 export function preencherFormulario(atleta) {
-    let idInput = document.getElementById('atletaId');
-    if (idInput) {
-        idInput.value = atleta.id;
-    }
+    let atletaIdElement = document.getElementById('atletaId');
+    let nomeElement = document.getElementById('nome');
+    let cpfElement = document.getElementById('cpf');
+    let dataNascimentoElement = document.getElementById('dataNascimento');
+    let btnSalvarElement = document.getElementById('btnSalvar');
     
-    let nomeInput = document.getElementById('nome');
-    if (nomeInput) {
-        nomeInput.value = atleta.nome;
+    if (atletaIdElement) {
+        atletaIdElement.value = atleta.id;
     }
-    
-    let cpfInput = document.getElementById('cpf');
-    if (cpfInput) {
-        cpfInput.value = atleta.cpf;
-        cpfInput.disabled = true;
+    if (nomeElement) {
+        nomeElement.value = atleta.nome;
     }
-    
-    let dataInput = document.getElementById('dataNascimento');
-    if (dataInput) {
-        dataInput.value = atleta.dataNascimento;
+    if (cpfElement) {
+        cpfElement.value = atleta.cpf;
+        cpfElement.disabled = true;
     }
-    
-    let btnSalvar = document.getElementById('btnSalvar');
-    if (btnSalvar) {
-        btnSalvar.textContent = 'Atualizar';
+    if (dataNascimentoElement) {
+        dataNascimentoElement.value = atleta.dataNascimento;
+    }
+    if (btnSalvarElement) {
+        btnSalvarElement.textContent = 'Atualizar';
     }
 }
 
 export function obterDadosFormulario() {
-    let dados = {
-        nome: '',
-        cpf: '',
-        dataNascimento: ''
+    let nomeElement = document.getElementById('nome');
+    let cpfElement = document.getElementById('cpf');
+    let dataNascimentoElement = document.getElementById('dataNascimento');
+    
+    return {
+        nome: nomeElement ? nomeElement.value : '',
+        cpf: cpfElement ? cpfElement.value : '',
+        dataNascimento: dataNascimentoElement ? dataNascimentoElement.value : ''
     };
     
     let nomeInput = document.getElementById('nome');
@@ -125,27 +120,138 @@ export function obterDadosFormulario() {
     return dados;
 }
 
-export function mostrarMensagem(msg) {
+export function validarDataNascimento(data) {
+    if (!data) {
+        return { valido: false, mensagem: 'Data de nascimento é obrigatória!' };
+    }
+
+    let partes = data.split('-');
+    let ano = parseInt(partes[0]);
+    let mes = parseInt(partes[1]);
+    let dia = parseInt(partes[2]);
+
+    let anoAtual = new Date().getFullYear();
+
+    if (ano > anoAtual) {
+        return { valido: false, mensagem: 'A data de nascimento não pode ser futura!' };
+    }
+
+    if (ano < 1900) {
+        return { valido: false, mensagem: 'O ano deve ser 1900 ou posterior!' };
+    }
+
+    if (mes < 1 || mes > 12) {
+        return { valido: false, mensagem: 'Mês inválido!' };
+    }
+
+    if (dia < 1 || dia > 31) {
+        return { valido: false, mensagem: 'Dia inválido!' };
+    }
+
+    if (mes == 2) {
+        let bissexto = (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
+        if (bissexto && dia > 29) {
+            return { valido: false, mensagem: 'Fevereiro só tem 29 dias em ano bissexto!' };
+        }
+        if (!bissexto && dia > 28) {
+            return { valido: false, mensagem: 'Fevereiro só tem 28 dias!' };
+        }
+    }
+
+    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
+        return { valido: false, mensagem: 'Este mês só tem 30 dias!' };
+    }
+
+    let idade = anoAtual - ano;
+    if (idade < 5) {
+        return { valido: false, mensagem: 'O atleta deve ter pelo menos 5 anos!' };
+    }
+
+    return { valido: true };
+}
+
+export function mostrarMensagem(msg, tipo) {
     alert(msg);
 }
+
+export function abrirModalCompeticoes(atleta, competicoes) {
+    if (!modalCompeticoes) {
+        return;
+    }
+
+    let modalNome = document.getElementById('modalNomeAtleta');
+    let modalCpf = document.getElementById('modalCpfAtleta');
+    let modalTotal = document.getElementById('modalTotalCompeticoes');
+    let listaCompeticoesModal = document.getElementById('listaCompeticoesModal');
+
+    if (modalNome) {
+        modalNome.textContent = atleta.nome;
+    }
+    if (modalCpf) {
+        modalCpf.textContent = atleta.cpf;
+    }
+    if (modalTotal) {
+        modalTotal.textContent = competicoes.length;
+    }
+
+    if (listaCompeticoesModal) {
+        if (competicoes.length === 0) {
+            listaCompeticoesModal.innerHTML = '<div class="competicao-vazio">📭 Nenhuma inscrição ainda</div>';
+        } else {
+            let html = '';
+            competicoes.forEach(function(c) {
+                html = html + '<div class="competicao-item">';
+                html = html + '<div class="competicao-info">';
+                html = html + '<div class="competicao-nome">🏆 ' + c.nome + '</div>';
+                html = html + '<div class="competicao-detalhes">📅 ' + formatarData(c.data) + ' | 📍 ' + c.local + ' | 📏 ' + c.distancia + 'km</div>';
+                html = html + '<span class="competicao-tipo">' + c.tipoFormatado + '</span>';
+                html = html + '</div>';
+                html = html + '</div>';
+            });
+            listaCompeticoesModal.innerHTML = html;
+        }
+    }
+
+    modalCompeticoes.classList.add('ativo');
+}
+
+export function fecharModalCompeticoes() {
+    if (modalCompeticoes) {
+        modalCompeticoes.classList.remove('ativo');
+    }
+}
+
+if (btnFecharModal) {
+    btnFecharModal.addEventListener('click', fecharModalCompeticoes);
+}
+
+if (modalCompeticoes) {
+    modalCompeticoes.addEventListener('click', function(e) {
+        if (e.target === modalCompeticoes) {
+            fecharModalCompeticoes();
+        }
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharModalCompeticoes();
+    }
+});
 
 function formatarData(data) {
     let partes = data.split('-');
     let ano = partes[0];
     let mes = partes[1];
     let dia = partes[2];
-    
     return dia + '/' + mes + '/' + ano;
 }
 
 export function configurarMascaraCPF() {
     let cpfInput = document.getElementById('cpf');
-    
     if (cpfInput) {
         cpfInput.addEventListener('input', function(e) {
-            let valor = e.target.value;
-            valor = valor.replace(/\D/g, '');
-            
+            let valor = e.target.value.replace(/\D/g, '');
             if (valor.length <= 11) {
                 valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
                 valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
